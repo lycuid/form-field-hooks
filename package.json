@@ -1,26 +1,27 @@
 {
-		"name": "form-validation",
-		"version": "1.0.0",
-		"main": "index.js",
-		"author": "Abhishek Kadam",
-		"license": "MIT",
-		"devDependencies": {
-				"@types/jquery": "^3.3.22",
-				"@types/react": "^16.7.6",
-				"@types/react-dom": "^16.0.9",
-				"awesome-typescript-loader": "^5.2.1",
-				"css-loader": "^1.0.1",
-				"jquery": "^3.3.1",
-				"path": "^0.12.7",
-				"react": "^16.7.0-alpha.2",
-				"react-dom": "^16.7.0-alpha.2",
-				"style-loader": "^0.23.1",
-				"typescript": "^3.1.6",
-				"webpack": "^4.11.1",
-				"webpack-cli": "^3.0.2",
-				"webpack-merge": "^4.1.4"
-		},
-		"dependencies": {
-				"tsc": "^1.20150623.0"
-		}
+	"name": "form-validation",
+	"version": "1.0.0",
+	"main": "index.js",
+	"author": "Abhishek Kadam",
+	"license": "MIT",
+	"scripts": {
+		"build": "webpack --color --progress -p --config webpack/webpack.prod.js",
+		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js"
+	},
+	"devDependencies": {
+		"@types/jquery": "^3.3.22",
+		"@types/react": "^16.7.6",
+		"@types/react-dom": "^16.0.9",
+		"awesome-typescript-loader": "^5.2.1",
+		"css-loader": "^1.0.1",
+		"jquery": "^3.3.1",
+		"path": "^0.12.7",
+		"react": "^16.7.0-alpha.2",
+		"react-dom": "^16.7.0-alpha.2",
+		"style-loader": "^0.23.1",
+		"typescript": "^3.1.6",
+		"webpack": "^4.11.1",
+		"webpack-cli": "^3.0.2",
+		"webpack-merge": "^4.1.4"
+	}
 }
