@@ -6,9 +6,9 @@ export interface ObjectInterface { [index: string]: any }
 
 namespace Field {
 
-  export interface Params extends React.InputHTMLAttributes<Types.HTMLInput>, ObjectInterface {
+  export interface Attributes extends React.InputHTMLAttributes<Types.HTMLInput>, ObjectInterface {
     // required
-    value: string | string[];
+    value?: string | string[];
  
     onChange?: Types.Void;
   }
@@ -17,17 +17,24 @@ namespace Field {
     validity: (a: Object) => boolean
   }
 
-  export interface Meta { touched: boolean; dirty: boolean }
+  export interface Meta {
+    touched?: boolean;
+    dirty?: boolean,
+    valid?: boolean
+  }
   
-  export interface Input { attr: Params; meta: Meta, setAttr: Types.Void }
+  export interface Input {
+    attr: Attributes
+    setAttr: Types.Void
+    meta: Meta
+  }
 
-  export const Element = (field: Input): JSX.Element => {
-    
-    return (
-      <React.Fragment>
-        {<input {...field.attr} />}
-      </React.Fragment>
-    )
+  export interface InputAttributes extends Attributes {
+    value: string | string[]
+  }
+
+  export interface CheckboxAttributes extends Attributes {
+    defaultChecked?: boolean
   }
 
 }

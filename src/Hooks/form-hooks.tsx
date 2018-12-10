@@ -4,75 +4,145 @@ import { Field, Types } from '../Interfaces';
 import { useStateReducer } from "./form-reducers";
 
 
-const { useEffect } = React;
+let { useEffect, useMemo, useRef } = React;
 
-/*
-  @TODO instead of having seperate reducers, have the same one somehow,
-  rendering will be jsut once then.
-*/
-export const useField =
-(params: Field.Params, options?: Field.Options): Field.Input =>
+
+/**
+ * 
+ * @todo instead of having seperate reducers, have the same one somehow,
+ * rendering will be jsut once then.
+ * 
+ * @param attributes: Field.Attributes
+ * @param options: Field.Options 
+ */
+export const useField = (
+  attributes: Field.Attributes,
+  options?: Field.Options
+): any => /** @todo add a static return type here */
 {
   // By default setting it to text as there are some jquery/querySelectors, 
   // dependent on the type of the input itself.
-  params.type = params.type || 'text';
-  let [state, setAttr] = useStateReducer(params);
+  attributes.type = attributes.type || '';
+  let [state, dispatchState]: [Field.Attributes, React.Dispatch<any>] = useStateReducer(attributes);
 
-  let [meta, dispatchMeta] = useStateReducer({
+  let [meta, dispatchMeta]: [Field.Meta, React.Dispatch<Field.Meta>] = useStateReducer({
     touched: false, dirty: false, valid: true
   });
-
+  
+  
   // local function, so the state, dispatch etc is accessable, rather
   // than passing as argument, which can get a little messy in this case.
-  const applyValidations = (valid: boolean): void => {
-    valid = (options && options.validity) ?
-      (options.validity(state) && valid) : valid;
-    dispatchMeta({ valid });
-  }
-
-  // custom default onChange.
-  const onChange: Types.Void = 
-  (e: React.ChangeEvent<Types.HTMLInput>) => {
-    let { value } = e.target;
-    // handle `touched`
+  const sanitize = (e: any, action: string /** @todo add static type here */) => {
+    // update meta
     if (!meta.touched) { dispatchMeta({ touched: true }); }
-    // set value on input
-    setAttr({ value });
 
-    applyValidations(e.target.validity.valid);
+    // run-validations
+    var valid = e.target.validity.valid;
+    valid = (options && options.validity) ?
+    (options.validity(state) && valid) : valid;
+    dispatchMeta({ valid });
 
-    // finally call the provided onChange.
-    state.onChange && state.onChange(e);
-  };
-
-
-  const onBlur: Types.Void = (e: any) => {
-    // handle touched
-    !meta.touched && dispatchMeta({ touched: true })
-
-    applyValidations(e.target.validity.valid);
-  };
+    // kindly opposite of preventDefault, only this continues the action
+    continueDefault(e, state, action);
+  }
  
+
+  // event handlers
+  const onChange: Types.Void = (
+    e: React.ChangeEvent<Types.HTMLInput>
+  ): void => sanitize(e, 'onChange');
+  
+  const onBlur: Types.Void = (e: any) => sanitize(e, 'onBlur');
+
+  const input: any = { state: {...state, onChange, onBlur}, dispatchState, meta, dispatchMeta };
+
+  return input;
+}
+
+
+
+
+export const useInput = (
+  attributes: Field.InputAttributes,
+  options?: Field.Options
+): Field.Input =>
+{
+  let { state, dispatchState, meta, dispatchMeta } = useField(attributes, options)
+
+  const onChange: Types.Void = (
+    e: React.ChangeEvent<Types.HTMLInput>
+  ) =>
+  {
+    const { value } = e.target;
+    dispatchState({ value });
+    
+    continueDefault(e, state, 'onChange');
+  }
 
   // effects: cDM, cDU.
   // state specific cDU, called only when 'input.value' state is updated.
   useEffect(() => {
     // checks if new 'input.value' is equal to the originally provided
-    // 'value' in 'params'.
-    if (params.value != state.value && !meta.dirty)
+    // 'value' in 'Attributes'.
+    if (attributes.value != state.value && !meta.dirty)
       dispatchMeta({ dirty: true });
-    applyValidations(true);
   }, [state.value]);
+  
 
+  let input: Field.Input = { attr: { ...state, onChange }, setAttr: dispatchState, meta };
 
-  // Finally constructing the 'Field' for returning.
-  var attr: any = {...state, onChange, onBlur};
-  const field: Field.Input = { attr, meta, setAttr };
-
-  return field;
+  return input;
 }
 
 
-const applyValiditions = (): void => {
 
+export const useCheckbox = (
+  attributes: Field.CheckboxAttributes,
+  options?: Field.Options
+): Field.Input =>
+{
+  // dont need the useless value prop here
+  let { ...initialAttr } = attributes; 
+
+  let { state, dispatchState, meta, dispatchMeta } = useField(
+    {...{initialAttr, value: 'true'}, type: 'checkbox'},
+    (options || {}) as Field.Options
+  );
+
+  const onChange: Types.Void = (
+    e: React.ChangeEvent<Types.HTMLInput>
+  ) =>  {
+    if (!meta.dirty) dispatchMeta({ dirty: true });
+    console.log(state.checked);
+    dispatchState({ checked: !state.checked });
+
+    continueDefault(e, state, 'onChange');
+  }
+
+  return { attr: {...state, onChange}, setAttr: dispatchState, meta };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const continueDefault = (
+  e: React.ChangeEvent<Types.HTMLInput>,
+  state: Field.Attributes,
+  action: string
+): void => state[action] && state[action](e);
