@@ -1,41 +1,42 @@
-import * as React from 'react';
-import Types from "./Types";
-
+import Types from './Types';
 
 export interface ObjectInterface { [index: string]: any }
 
-namespace Field {
+declare namespace Field {
 
-  export interface Attributes extends React.InputHTMLAttributes<Types.HTMLInput>, ObjectInterface {
+  interface Attributes extends React.InputHTMLAttributes<Types.HTMLInput>, ObjectInterface {
     // required
     value?: string | string[];
- 
+
     onChange?: Types.Void;
   }
 
-  export interface Options extends ObjectInterface {
-    validity: (a: Object) => boolean
+  interface Options extends ObjectInterface {
+    validations: (a: Object) => boolean
   }
 
-  export interface Meta {
+  interface Meta {
     touched?: boolean;
     dirty?: boolean,
     valid?: boolean
   }
   
-  export interface Input {
+  interface Element {
     attr: Attributes
     setAttr: Types.Void
     meta: Meta
   }
 
-  export interface InputAttributes extends Attributes {
+  interface InputAttributes extends Attributes {
     value: string | string[]
   }
 
-  export interface CheckboxAttributes extends Attributes {
+  interface CheckboxAttributes extends Attributes {
+    value: string | string[]
     defaultChecked?: boolean
   }
+
+  interface RadioAttributes extends CheckboxAttributes { }
 
 }
 

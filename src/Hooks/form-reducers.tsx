@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Types } from "../Interfaces";
 
-
 let { useReducer } = React;
 
 // Generic state reducer, behaviour some what similar to good ol'

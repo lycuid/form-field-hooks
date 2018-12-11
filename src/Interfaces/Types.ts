@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 declare namespace Types {
   export type Maybe<T> = T | void
   export type Void = (params?: any) => void

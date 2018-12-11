@@ -7,7 +7,7 @@
 	"scripts": {
 		"build": "webpack --color --progress -p --config webpack/webpack.prod.js",
 		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js",
-		"start": "nodemon ./server/server.js"
+		"runserver": "nodemon ./server/server.js"
 	},
 	"devDependencies": {
 		"@types/express": "^4.16.0",
