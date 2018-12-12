@@ -62,6 +62,12 @@ export const useRadio = (
   options?: Field.Options
 ): Field.Element =>
 {
+  // ensure the `checked` is a boolean
+  // in case its not provied (undefined, null),
+  // this will default it to false.
+  attributes.checked = !!attributes.checked;
+  let [rootVal, setRootVal] = useState(attributes.checked ? attributes.value : null);
+  console.log(attributes.checked, rootVal);
   let { state, dispatchState, meta } = useCheckableField(
     { ...attributes, type: 'radio' }, (options || {}) as Field.Options
   );
@@ -71,10 +77,14 @@ export const useRadio = (
   var onChange: Types.Void = (
     e: React.ChangeEvent<Types.HTMLInput>
   ) => {
-    console.log('called radio');
-    if (!state.checked) dispatchState({ checked: true });
+    setRootVal(state.value);
+    console.log('changed rootvalue');
     continueDefault(e, state, 'onChange');
   }
+
+  useEffect(() => {
+    dispatchState({ checked: rootVal === state.value });
+  }, [rootVal]);
 
   return { attr: {...state, onChange}, setAttr: dispatchState, meta };
 }
@@ -100,10 +110,12 @@ export const useRadioGroup = (
   for (let { attributes, options } of params) {
 
     // create radio button with controlled `checked` attribute.
+    console.log(groupValue, attributes.value, groupValue === attributes.value);
     let { attr, setAttr, meta } = useRadio({
       ...attributes,
       checked: groupValue === attributes.value
     }, options);
+    console.log(attr);
 
     var onChange: Types.Void = (
       e: React.ChangeEvent<Types.HTMLInput>
@@ -111,19 +123,16 @@ export const useRadioGroup = (
     {
       // just change the root value for group radios
       // and the controlled check will update in a side-effect.
-      console.log('called radio group')
       setGroupValue(attr.value);
+      console.log('changed groupValue');
       continueDefault(e, attr, 'onChange');
     }
 
-    useEffect(() => {
-      // update checked after root value is updated.
-      // making the radio button group controlled.
-      
-      setAttr({ checked: groupValue === attr.value });
+    // useEffect(() => {
+    //   // dont update `checked` prop from here.
         
-      console.log('called group effect');
-    }, [groupValue]);
+    //   console.log('called group effect');
+    // }, [groupValue]);
 
     radioGroup.push({ attr: {...attr, onChange}, setAttr, meta });
   }

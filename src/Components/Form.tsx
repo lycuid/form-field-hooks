@@ -14,7 +14,7 @@ const Form = (_: Object): JSX.Element => {
     gender1, gender2, sampleRadio
   } = useContext(FormContext);
 
-  console.log(sampleRadio);
+  // console.log(sampleRadio);
 
   const values = (obj: any) => obj; // Object.keys(obj).map((key) => obj[key]);
 

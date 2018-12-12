@@ -96,8 +96,6 @@ export const useCheckableField = (
   // attribute for updating `meta`, rest should be handled in `useField`.
   useEffect(() => {
     // we wont check value as it is already been handled in `useField`.
-    console.log('meta called');
-    console.log(attributes.checked, state.checked);
     if (attributes.checked !== state.checked && !meta.dirty)
       dispatchMeta({ dirty: true });
     sanitize(true);

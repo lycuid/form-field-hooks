@@ -27,8 +27,8 @@ const App = (_: Object): JSX.Element => {
   const skills2: Field.Element = useCheckbox({ value: 'cricket', checked: true, name: 'skills' });
   
   const [gender1, gender2]: Field.Element[] = useRadioGroup([
-    {attributes: { value: 'Male', checked: false, name: 'gender' }},
-    {attributes: { value: 'Female', checked: false, name: 'gender' }},
+    {attributes: { value: 'Male', checked: false }},
+    {attributes: { value: 'Female', checked: false }},
   ]);
 
   const sampleRadio = useRadio({ value: 'Male', checked: false, name: 'sample' });
