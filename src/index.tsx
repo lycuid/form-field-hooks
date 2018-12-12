@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import { Field } from './Interfaces';
-import { useInput, useCheckbox, useRadioGroup } from './Hooks';
+import { useInput, useCheckbox, useRadio, useRadioGroup } from './Hooks';
 import { FormContext } from './context';
 
 import { Form } from './Components';
@@ -13,7 +13,12 @@ const App = (_: Object): JSX.Element => {
 
   const name: Field.Element = useInput(
     { value: 'Mary', disabled: false, name: 'name' },
-    { validations: (attr: Field.Attributes) => {console.log(attr.value.length); return attr.value.length < 7} }
+    { validations:
+      (attr: Field.Attributes) => {
+        console.log(attr.value.length);
+        return attr.value.length < 7;
+      }
+    }
   );
   const surname: Field.Element = useInput({ value: 'Poppins', readOnly: true });
   const prize: Field.Element = useInput({ value: '21', disabled: true });
@@ -26,10 +31,11 @@ const App = (_: Object): JSX.Element => {
     {attributes: { value: 'Female', checked: false, name: 'gender' }},
   ]);
 
+  const sampleRadio = useRadio({ value: 'Male', checked: false, name: 'sample' });
 
   const value: any = {
     name, surname, prize, password, skills1, skills2,
-    gender1, gender2
+    gender1, gender2, sampleRadio
   };
   
   return (

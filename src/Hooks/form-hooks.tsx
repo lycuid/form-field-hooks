@@ -14,11 +14,7 @@ export const useInput = (
 ): Field.Element =>
 {
 
-  let {
-    state, dispatchState,
-    meta, dispatchMeta,
-    sanitize
-  } = useField(attributes, options)
+  let { state, dispatchState, meta } = useField(attributes, options);
 
   const onChange: Types.Void = (
     e: React.ChangeEvent<Types.HTMLInput>
@@ -28,11 +24,9 @@ export const useInput = (
     console.log('custom onchange');
     // The dom is updated but, the state object wont
     // update instantly though (probably async)
-    dispatchState({ value: value }) 
-
-    continueDefault(e, state, 'onChange')
+    dispatchState({ value: value });
+    continueDefault(e, state, 'onChange');
   }
-
 
   let input: Field.Element = { attr: { ...state, onChange }, setAttr: dispatchState, meta };
 
@@ -46,7 +40,7 @@ export const useCheckbox = (
   options?: Field.Options
 ): Field.Element =>
 {
-  let { state, dispatchState, meta, ...rest } = useCheckableField(
+  let { state, dispatchState, meta } = useCheckableField(
     {...attributes, type: 'checkbox'},  (options || {}) as Field.Options
   );
 
@@ -55,7 +49,31 @@ export const useCheckbox = (
   ) =>
   {
     dispatchState({ checked: !state.checked });
-    continueDefault(e, state, 'onChange')
+    continueDefault(e, state, 'onChange');
+  }
+
+  return { attr: {...state, onChange}, setAttr: dispatchState, meta };
+}
+
+
+
+export const useRadio = (
+  attributes: Field.RadioAttributes,
+  options?: Field.Options
+): Field.Element =>
+{
+  let { state, dispatchState, meta } = useCheckableField(
+    { ...attributes, type: 'radio' }, (options || {}) as Field.Options
+  );
+  
+  // no need to handle `dirty` from meta as it is handled in 
+  // a side-effect in the `useCheckableField`.
+  var onChange: Types.Void = (
+    e: React.ChangeEvent<Types.HTMLInput>
+  ) => {
+    console.log('called radio');
+    if (!state.checked) dispatchState({ checked: true });
+    continueDefault(e, state, 'onChange');
   }
 
   return { attr: {...state, onChange}, setAttr: dispatchState, meta };
@@ -63,35 +81,52 @@ export const useCheckbox = (
 
 
 export const useRadioGroup = (
-  parameters: {
+  params: Array<{
     attributes: Field.RadioAttributes,
     options?: Field.Options
-  }[]
+  }>
 ): Field.Element[] =>
 {
+
+  // being a radio group, needs to be controlled as we'll have
+  // a root value (`groupValue`).
+  // And each radio being a controlled element, 
+  // only need to control the root value and the state of all the 
+  // radios in the group should be updated eventually.
   let [groupValue, setGroupValue] = useState(null);
 
-  var checkBoxes: Field.Element[] = [];
-  for (let p of parameters) {
-    let { state, dispatchState, meta, dispatchMeta } = useCheckableField(
-      {...p.attributes, checked: groupValue === p.attributes.value, type: 'radio'},  (p.options || {}) as Field.Options
-    );
-    
+  var radioGroup: Field.Element[] = [];
+
+  for (let { attributes, options } of params) {
+
+    // create radio button with controlled `checked` attribute.
+    let { attr, setAttr, meta } = useRadio({
+      ...attributes,
+      checked: groupValue === attributes.value
+    }, options);
+
     var onChange: Types.Void = (
       e: React.ChangeEvent<Types.HTMLInput>
     ) =>
     {
-      if (!meta.dirty) dispatchMeta({ dirty: true });
-      setGroupValue(state.value);
-      continueDefault(e, state, 'onChange')
+      // just change the root value for group radios
+      // and the controlled check will update in a side-effect.
+      console.log('called radio group')
+      setGroupValue(attr.value);
+      continueDefault(e, attr, 'onChange');
     }
-    
+
     useEffect(() => {
-      dispatchState({ checked: groupValue === state.value });
+      // update checked after root value is updated.
+      // making the radio button group controlled.
+      
+      setAttr({ checked: groupValue === attr.value });
+        
+      console.log('called group effect');
     }, [groupValue]);
 
-    checkBoxes.push({ attr: {...state, onChange}, setAttr: dispatchState, meta });
+    radioGroup.push({ attr: {...attr, onChange}, setAttr, meta });
   }
 
-  return checkBoxes;
+  return radioGroup;
 }
