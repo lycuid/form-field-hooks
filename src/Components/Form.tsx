@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { FormContext } from '../context';
+import { Field } from '../Interfaces';
 
 let { useContext, useState, useRef } = React;
 
@@ -9,12 +10,10 @@ const Form = (_: Object): JSX.Element => {
   const [formID, setFormID] = useState(Math.random().toString());
 
   const {
-    name, surname, prize,
-    password, skills1, skills2,
-    gender1, gender2, sampleRadio
+    name, surname, prize, password, skills1, skills2,
+    gender1, gender2, createdDate, createdTime, createdDateTime,
+    remarks, games,
   } = useContext(FormContext);
-
-  // console.log(sampleRadio);
 
   const values = (obj: any) => obj; // Object.keys(obj).map((key) => obj[key]);
 
@@ -22,10 +21,10 @@ const Form = (_: Object): JSX.Element => {
     <>
       <form id={'sample'}>
 
-        <input id={'name'} {...name.attr} /><br />
+        <FormInput element={name} /><br />
         <span>{JSON.stringify(values(name.meta))}</span><br />
 
-        <input id={'surname'} {...surname.attr} /><br />
+        <FormInput element={surname} /><br />
         <span>{JSON.stringify(values(surname.meta))}</span><br />
 
         <input id={'prize'} {...prize.attr} /><br />
@@ -44,8 +43,26 @@ const Form = (_: Object): JSX.Element => {
         <span>{JSON.stringify(values(gender1.meta))}</span><br />
         <span>{JSON.stringify(values(gender2.meta))}</span><br />
 
-        <input id={'sampleRadio'} {...sampleRadio.attr} /><br />
-        <span>{JSON.stringify(values(sampleRadio.meta))}</span><br />
+        <input id={'createdDate'} {...createdDate.attr} /><br />
+        <span>{JSON.stringify(values(createdDate.meta))}</span><br />
+
+        <input id={'createdTime'} {...createdTime.attr} /><br />
+        <span>{JSON.stringify(values(createdTime.meta))}</span><br />
+
+        <input id={'createdDateTime'} {...createdDateTime.attr} /><br />
+        <span>{JSON.stringify(values(createdDateTime.meta))}</span><br />
+
+        <textarea id={'remarks'} {...remarks.attr} /><br />
+        <span>{JSON.stringify(values(remarks.meta))}</span><br />
+
+        <select id={'games'} {...games.attr}>
+          <option value={''}></option>
+          <option value='Starcraft 2'>{'Starcraft 2'}</option>
+          <option value='Getting over it'>{'Getting over it'}</option>
+          <option value='CS: GO'>{'CS: GO'}</option>
+        </select>
+        <br />
+        <span>{JSON.stringify(values(games.meta))}</span><br />
 
         <br />
         <br />
@@ -71,5 +88,14 @@ const Form = (_: Object): JSX.Element => {
     </>
   )
 }
+
+
+const FormInput = (
+  { element }: Field.FormInputProps
+): JSX.Element => (<>{element.meta.show && <input {...element.attr} />}</>);
+
+const FormArea = (
+  { element }: Field.FormTextAreaProps
+): JSX.Element => (<>{element.meta.show && <textarea {...element.attr} />}</>);
 
 export default Form;

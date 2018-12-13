@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Types } from "../Interfaces";
 
 let { useReducer } = React;
 

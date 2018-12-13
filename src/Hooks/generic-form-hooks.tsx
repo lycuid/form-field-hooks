@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Field, Types } from '../Interfaces';
+import { Field } from '../Interfaces';
 import { useStateReducer } from "./form-reducers";
 
 import { continueDefault } from '../Utils';
@@ -8,28 +8,31 @@ import { continueDefault } from '../Utils';
 let { useEffect } = React;
 
 /**
- * @todo instead of having seperate reducers, have the same one somehow,
- * rendering will be jsut once then.
- * 
- * @param attributes should be valid HTML DOM-input props.
+ * @param attributes should be valid HTML-DOM input attributes.
  * @param options: reference -> Field.Options 
  */
 export const useField = (
   attributes: Field.Attributes,
   options?: Field.Options
-): any => /** @todo add a static return type here */
+): Field.BasicElement =>
 {
   // By default setting it to text as there are some jquery/querySelectors, 
   // dependent on the type of the input itself.
   attributes.type = attributes.type || '';
 
-  const defaultMeta: Field.Meta = {touched: false, dirty: false, valid: true};
+  const defaultMeta: Field.Meta = {
+    touched: false,
+    dirty: false,
+    valid: true,
+    show: true
+  };
 
-  let [state, dispatchState] = useStateReducer(attributes);
-  let [meta, dispatchMeta] = useStateReducer(defaultMeta);
+  let [state, dispatchState]: Types.Reducer<any> = useStateReducer(attributes);
+  let [meta, dispatchMeta]: Types.Reducer<any> = useStateReducer(defaultMeta);
   
   /**
-   * @param defaultValid just in case if any validations run before `sanitize`.
+   * @param defaultValid just in case if any validations needs
+   * to be run before `sanitize`.
    * 
    * local function, so the state, dispatch etc is accessable, rather
    * than passing as argument, which can get a little messy in this case.
@@ -39,19 +42,19 @@ export const useField = (
     const valid: boolean = (options && options.validations) ?
     (options.validations(state) && defaultValid) : defaultValid;
     
-    valid !== state.valid && dispatchMeta({ valid });
+    valid !== state.valid && dispatchMeta({ valid, show: valid });
   }
 
-  // EVENT HANDLERS
-  // as this is the lowest level of Field, we dont need `continueDefault`
-  // for onChange as it will be done by default.
+  // Event Handlers.
   const onBlur: Types.Void = (e: any) => {
     if (!meta.touched) dispatchMeta({ touched: true });
+    sanitize(e.target.validity.valid);
     continueDefault(e, state, 'onBlur');
   }
 
   const onFocus: Types.Void = (e: any) => {
     if (!meta.touched) dispatchMeta({ touched: true });
+    sanitize(e.target.validity.valid);
     continueDefault(e, state, 'onFocus');
   }
   
@@ -66,8 +69,7 @@ export const useField = (
   }, [state.value]);
   
 
-  /** @todo add proper type definition here. */
-  const field: any = {
+  const field: Field.BasicElement = {
     state: {...state, onBlur, onFocus}, dispatchState,
     meta, dispatchMeta, sanitize
   };
@@ -80,7 +82,7 @@ export const useField = (
 export const useCheckableField = (
   attributes: Field.Attributes,
   options?: Field.Options
-): any =>
+): Field.BasicElement =>
 {
   // extending `useField` for checkableField.
   let {
@@ -102,6 +104,91 @@ export const useCheckableField = (
   }, [state.checked]);
 
   return { state, dispatchState, meta, dispatchMeta, sanitize };
+}
+
+
+
+
+
+
+
+
+/**
+ * @todo make this one a basic Field (only meta manipulation)
+ * and create a high level hook for state manipulation.
+ * 
+ * @param attributes valid textarea attributes
+ * @param options 
+ */
+export const useTextAreaField = (
+  attributes: Field.TextAreaAttributes,
+  options?: Field.Options
+): Field.TextAreaElement =>
+{
+
+  const defaultMeta: Field.Meta = {
+    touched: false,
+    dirty: false,
+    valid: true,
+    show: true
+  };
+
+  let [state, dispatchState]: Types.Reducer<any> = useStateReducer(attributes);
+  let [meta, dispatchMeta]: Types.Reducer<any> = useStateReducer(defaultMeta);
+  
+  /**
+   * @param defaultValid just in case if any validations needs
+   * to be run before `sanitize`.
+   * 
+   * local function, so the state, dispatch etc is accessable, rather
+   * than passing as argument, which can get a little messy in this case.
+   */
+  const sanitize = (defaultValid: boolean) => {
+    // run-validations
+    const valid: boolean = (options && options.validations) ?
+    (options.validations(state) && defaultValid) : defaultValid;
+    
+    valid !== state.valid && dispatchMeta({ valid, show: valid });
+  }
+
+  // Event Handlers.
+  const onChange: Types.Void = (
+    e: React.ChangeEvent<Types.HTMLTextArea>
+  ) =>
+  {
+    const { value } = e.target;
+    dispatchState({ value });
+    continueDefault<Types.HTMLTextArea>(e, state, 'onChange');
+  }
+
+  const onBlur: Types.Void = (e: any) => {
+    if (!meta.touched) dispatchMeta({ touched: true });
+    sanitize(e.target.validity.valid);
+    continueDefault(e, state, 'onBlur');
+  }
+
+  const onFocus: Types.Void = (e: any) => {
+    if (!meta.touched) dispatchMeta({ touched: true });
+    sanitize(e.target.validity.valid);
+    continueDefault(e, state, 'onFocus');
+  }
+  
+  // effects: cDM, cDU.
+  // state specific cDU, called only when `state.value` is updated.
+  useEffect(() => {
+    // checks if new 'state.value' is equal to the originally provided
+    // 'value' in 'Attributes'.
+    if (attributes.value != state.value && !meta.dirty)
+      dispatchMeta({ dirty: true });
+    sanitize(true);
+  }, [state.value]);
+  
+
+  const field: Field.TextAreaElement = {
+    attr: {...state, onChange, onBlur, onFocus}, setAttr: dispatchState, meta
+  };
+
+  return field;
 }
 
 

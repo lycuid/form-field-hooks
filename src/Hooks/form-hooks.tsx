@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { Field, Types } from '../Interfaces';
-import { useField, useCheckableField } from './generic-form-hooks';
+import { Field } from '../Interfaces';
+import { useField, useCheckableField, useTextAreaField } from './generic-form-hooks';
 
 import { continueDefault } from '../Utils';
 
@@ -16,22 +16,49 @@ export const useInput = (
 
   let { state, dispatchState, meta } = useField(attributes, options);
 
+  /**
+   * @note The dom is updated almost instantly,
+   * but the state object wont.
+   */
   const onChange: Types.Void = (
     e: React.ChangeEvent<Types.HTMLInput>
   ) =>
   {
-    const { value } = e.target;
-    console.log('custom onchange');
-    // The dom is updated but, the state object wont
-    // update instantly though (probably async)
-    dispatchState({ value: value });
+    // @ts-ignore
+    const { value, options } = e.target;
+    
+
+    // Only in case of multiple select,
+    // we need to dispatch value as an array not a string.
+    if (state.multiple) {
+      let newValue: string[] = Array.apply(null, options) // convert to arry
+        .filter((option: any) => option.selected) // filter selected
+        .map((option: any) => option.value); // return only selected.
+
+      dispatchState({ value: newValue });
+    } else dispatchState({ value });
+
     continueDefault(e, state, 'onChange');
   }
 
-  let input: Field.Element = { attr: { ...state, onChange }, setAttr: dispatchState, meta };
+  let element: Field.Element = { attr: {...state, onChange}, setAttr: dispatchState, meta };
 
-  return input;
+  return element;
 }
+
+
+
+/**
+ * @todo somehow make this a high leve hook
+ * 
+ * @param attributes Valid Text Area attributes
+ * @param options 
+ */
+export const useTextArea = (
+  attributes: Field.TextAreaAttributes,
+  options?: Field.Options
+): Field.TextAreaElement => useTextAreaField(attributes, options);
+
 
 
 
@@ -57,37 +84,7 @@ export const useCheckbox = (
 
 
 
-export const useRadio = (
-  attributes: Field.RadioAttributes,
-  options?: Field.Options
-): Field.Element =>
-{
-  // ensure the `checked` is a boolean
-  // in case its not provied (undefined, null),
-  // this will default it to false.
-  attributes.checked = !!attributes.checked;
-  let [rootVal, setRootVal] = useState(attributes.checked ? attributes.value : null);
-  console.log(attributes.checked, rootVal);
-  let { state, dispatchState, meta } = useCheckableField(
-    { ...attributes, type: 'radio' }, (options || {}) as Field.Options
-  );
-  
-  // no need to handle `dirty` from meta as it is handled in 
-  // a side-effect in the `useCheckableField`.
-  var onChange: Types.Void = (
-    e: React.ChangeEvent<Types.HTMLInput>
-  ) => {
-    setRootVal(state.value);
-    console.log('changed rootvalue');
-    continueDefault(e, state, 'onChange');
-  }
 
-  useEffect(() => {
-    dispatchState({ checked: rootVal === state.value });
-  }, [rootVal]);
-
-  return { attr: {...state, onChange}, setAttr: dispatchState, meta };
-}
 
 
 export const useRadioGroup = (
@@ -95,7 +92,7 @@ export const useRadioGroup = (
     attributes: Field.RadioAttributes,
     options?: Field.Options
   }>
-): Field.Element[] =>
+): Field.RadioElements =>
 {
 
   // being a radio group, needs to be controlled as we'll have
@@ -110,12 +107,12 @@ export const useRadioGroup = (
   for (let { attributes, options } of params) {
 
     // create radio button with controlled `checked` attribute.
-    console.log(groupValue, attributes.value, groupValue === attributes.value);
-    let { attr, setAttr, meta } = useRadio({
+    let { state, dispatchState, meta, sanitize } = useCheckableField({
       ...attributes,
-      checked: groupValue === attributes.value
+      type: 'radio',
+      checked: !!attributes.checked
     }, options);
-    console.log(attr);
+
 
     var onChange: Types.Void = (
       e: React.ChangeEvent<Types.HTMLInput>
@@ -123,19 +120,19 @@ export const useRadioGroup = (
     {
       // just change the root value for group radios
       // and the controlled check will update in a side-effect.
-      setGroupValue(attr.value);
-      console.log('changed groupValue');
-      continueDefault(e, attr, 'onChange');
+      setGroupValue(state.value);
+      continueDefault(e, state, 'onChange');
     }
 
-    // useEffect(() => {
-    //   // dont update `checked` prop from here.
-        
-    //   console.log('called group effect');
-    // }, [groupValue]);
+    // effects: cDM, cDU
+    // will only execute when `groupValue` is updated.
+    useEffect(() => {
+      dispatchState({ checked: groupValue === state.value });
+      sanitize(true);
+    }, [groupValue]);
 
-    radioGroup.push({ attr: {...attr, onChange}, setAttr, meta });
+    radioGroup.push({ attr: {...state, onChange}, setAttr: dispatchState, meta });
   }
 
-  return radioGroup;
+  return { selected: groupValue, elements: radioGroup };
 }

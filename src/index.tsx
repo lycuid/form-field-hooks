@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import { Field } from './Interfaces';
-import { useInput, useCheckbox, useRadio, useRadioGroup } from './Hooks';
+import { useInput, useCheckbox, useRadioGroup, useTextArea } from './Hooks';
 import { FormContext } from './context';
 
 import { Form } from './Components';
@@ -15,27 +15,40 @@ const App = (_: Object): JSX.Element => {
     { value: 'Mary', disabled: false, name: 'name' },
     { validations:
       (attr: Field.Attributes) => {
-        console.log(attr.value.length);
         return attr.value.length < 7;
       }
     }
   );
-  const surname: Field.Element = useInput({ value: 'Poppins', readOnly: true });
+  const surname: Field.Element = useInput(
+    { value: 'Poppins', readOnly: false },
+    { validations: (_: Field.Element) => {
+      return name.meta.valid;
+    }}
+  );
   const prize: Field.Element = useInput({ value: '21', disabled: true });
   const password: Field.Element = useInput({ value: 'passwd', type: 'password' });
   const skills1: Field.Element = useCheckbox({ value: 'football', checked: true, name: 'skills' });
   const skills2: Field.Element = useCheckbox({ value: 'cricket', checked: true, name: 'skills' });
   
-  const [gender1, gender2]: Field.Element[] = useRadioGroup([
-    {attributes: { value: 'Male', checked: false }},
-    {attributes: { value: 'Female', checked: false }},
+  const createdDate: Field.Element = useInput({value: '', name: 'createdDate', type: 'date' });
+  const createdTime: Field.Element = useInput({value: '', name: 'createdTime', type: 'time' });
+  const createdDateTime: Field.Element = useInput({value: '', name: 'createdDateTime', type: 'datetime-local' });
+
+  const remarks: Field.TextAreaElement = useTextArea({ value: '', placeholder: 'remarks..', name: 'remarks' });
+  const games: Field.Element = useInput({ value: [], name: 'games', multiple: true });
+
+  const genderRadio: Field.RadioElements = useRadioGroup([
+    {attributes: { value: 'Male', checked: false, name: 'gender' }},
+    {attributes: { value: 'Female', checked: false, name: 'gender' }},
   ]);
 
-  const sampleRadio = useRadio({ value: 'Male', checked: false, name: 'sample' });
+
+  const [gender1, gender2]: Field.Element[] = genderRadio.elements;
 
   const value: any = {
     name, surname, prize, password, skills1, skills2,
-    gender1, gender2, sampleRadio
+    gender1, gender2, createdDate, createdTime, createdDateTime,
+    remarks, games
   };
   
   return (
