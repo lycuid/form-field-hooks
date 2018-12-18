@@ -148,7 +148,7 @@ export const useCheckbox = (
  */
 
 export const useRadioGroup = (
-  defaultValue: string,
+  defaultValue: string | null,
   params: {
     attributes: Field.RadioAttributes,
     options?: Field.Options

@@ -1,42 +1,168 @@
 # useField-hook-experimental
-`useField` hook for input state built with react hooks (experimental), yet seems like can be a solid. If it works out, then probably move towards `useForm` as well.
+stateful input field hooks built with react-hooks (experimental), making stuff like validations and 'should display' easy to use.
 
 
-## usage
-Hooks:
-* `useInput`, `useSelect`, `useTextArea`, `useCheckbox`
-  * params:
-    * `attributes`: &nbsp; should be valid attributes of element (which ever is bieng used).
-    * `options`: for now, only one function `validity`, which takes current state of the respective input as argument and returns boolean.
-  * returns:
-    * `attr`: &nbsp; new attributes with custom event handlers after extending them with the provider event handlers.
-    * `setAttr`: similar to `setState` for the returned `attr`.
-    * `meta`: &nbsp; a list of booleans which are self explanatory (`touched`, `dirty`, `valid` etc)
+## Usage
+### Fields:<br />
+(`useInput`,&nbsp; `useSelect`,&nbsp; `useTextArea`,&nbsp; `useCheckbox`)<br />
 
-* `useRadio`
-  * params: An Array of `{attributes, options}` (almost same as the above).
-  * returns: An Object with structure `{current, elements}`
-    * `current`: current selected value.
-    * `elements`: Array of `{attr, setAttr, meta}` in same order as provided.
+*_Input Parameters:_*
+
+| property | description |
+| ------ | ------ |
+| attributes: `{}` | valid html input attributes |
+| options: <br />`{validations: (attr) => void, display: (attr) => void}` | these functions are called to<br />set meta and while `sanitize()` |
+
+*_Output Element:_*
+
+| property | description |
+| ------- | ------- |
+| attr: `{}` | html attributes |
+| meta: `{}` | meta data (stateful)<br />_valid options_ below in `meta` table|
+| dispatchAttr:<br />`(...attr) => void` | `setState` for attr |
+| dispatchMeta:<br />`(...meta) =>  void` | `setState` for meta |
+| dispatchOptions:<br />`(...options) =>  void` | `setState` for options |
+| sanitize:<br />`(defaultValid, defaultShow) => void` | `setState` for meta |
+| fieldType: `string` | type of html field<br />(`input`, `checkbox`, `textarea` etc) |
+
+*_Meta:_*
+
+| property | description |
+| ------- | ------- |
+| touched: `boolean` | if at all focused |
+| dirty: `boolean` | if value changed |
+| valid: `boolean` | is valid |
+| show: `boolean` | should display |
+
+
+### Radio Group:<br />
+(`useRadioGroup`)<br />
+
+*_Input Parameters:_*
+
+| property | description |
+| ------ | ------- |
+| defaultValue: `string` \| `null` | default selected radio |
+| current: `string` | selected option |
+| fieldType: `string` | always 'radio-group' |
+
+*_Output Element:_*
+
+| property | description |
+| ------ | ------- |
+| elements: `Field[]` | Array of &lsaquo;same as the above Fields&rsaquo;. |
+| current: `string` | selected option |
+| fieldType: `string` | always 'radio-group' |
+
+
 
 ## Examples:
-In Progress.
-<!--
-    function Form() {
-      const name = useInput({value: 'Mary', name: 'name'});
-      const surname = useInput({value: 'Poppins', name: 'surname'});
+### Import
+```jsx
+import Form, {
+  useInput,
+  useSelect,
+  useCheckbox,
+  useRadioGroup,
+  useTextArea
+}from 'field-hooks-react';
+```
 
-      const isSaiyan = useCheckbox({name: 'isSaiyan'});
-      const isSuper = useCheckbox({name: 'isSuper'});
+### Input Element (can be any &lt;input&gt;)
+```jsx
+const InputElements = () => {
+  const name = useInput({value: 'luffy', name: 'name'});
 
-      const select = useSelect({value: '', name: 'select'});
-      const multiselect = useSelect({value: '', name: 'multiselect', multiple: true});
+  const isSaiyan = useCheckbox({name: 'isSaiyan', checked: true});
+  const isSuper = useCheckbox({name: 'isSuper'});
 
-      const description = useTextArea({value: '', name: 'description'});
-      return (
-        <>
-          <input {...name.attr} />
-        </>
-      )
-    }
--->
+  // Can be any Input Element
+  // (text, checkbox, password, datetme
+  // datetime-local, time, phone, checkbox etc)
+  return (
+    <>
+      <Form.Input element={name} />
+      <Form.Input element={isSuper} />
+      <Form.Input element={isSaiyan} />
+      
+      {/** can also use
+        * <input {...name.attr} />
+        * <input {...isSuper.attr} />
+        * <input {...isSaiyan.attr} />
+        */}
+    </>
+  )
+}
+```
+
+### Radio Elements
+```jsx
+const RadioElements = () => {
+  // radio-group
+  const genderRadio = useRadioGroup(null, [
+    {attributes: { value: 'Male', checked: false, name: 'gender' }},
+    {attributes: { value: 'Female', checked: false, name: 'gender' }},
+  ]);
+
+  // radio elements
+  const [gender1, gender2] = genderRadio.elements;
+  var currentSelection = genderRadio.current;
+
+  return (
+    <>
+      <Form.Input element={gender1} />
+      <Form.Input element={gender2} />
+
+      {/** can also use
+        * <input {...gender1.attr} />
+        * <input {...gender.attr} />
+        */}
+    </>
+  )
+}
+```
+
+### Select Element:
+```jsx
+  const SelectElement = () => {
+    const select = useSelect({value: '', name: 'select'});
+    const multiselect = useSelect({value: '', name: 'multiselect', multiple: true});
+
+    return (
+      <>
+        <Form.Select
+          element={select}
+          defaultOption={{ value: '', label: '--', hideAfter: true}}
+        >
+          <option value='1'>One Piece</option>
+          <option value='2'>Cowboy Bebop</option>
+          <option value='3'>Death Note</option>
+          <option value='4'>Naruto</option>
+        </Form.Select>
+
+        {/** can also use
+          * <select {...multiselect.attr}>
+          * ...
+          * </Form.Select>
+          */}
+      </>
+    )
+  }
+```
+
+### TextArea Element
+```jsx
+  const TextAreaElement = () => {
+    const description = useTextArea({value: '', name: 'description'});
+
+    return (
+      <>
+        <Field.TextArea element={description} />
+
+        {/** can also use
+          * <textarea {...description.attr} />
+          */}
+      </>
+    )
+  }
+```

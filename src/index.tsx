@@ -5,6 +5,7 @@ import { Field } from './Interfaces';
 import { useInput, useCheckbox, useRadioGroup, useTextArea, useSelect } from './Hooks';
 import { FormContext } from './context';
 
+// production app
 import App2 from './index2';
 
 
@@ -60,4 +61,6 @@ const App = (_: Object): JSX.Element => {
 
 
 // ReactDOM.render(<App />, document.querySelector('#app'));
+
+// production code
 ReactDOM.render(<App2 />, document.querySelector('#app'));
