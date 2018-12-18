@@ -1,15 +1,13 @@
-// declare namespace Types {
-//   export type Maybe<T> = T | void
-//   export type Void = (params?: any) => void
+declare namespace Types {
+  type Maybe<T> = T | void
+  type Void = (...params: any) => void
   
-//   export type Value = string | boolean | number | null
-//   export type Json = { [k: string]: Value | Value[] | Json }
-  
-//   export type HTMLInput = HTMLInputElement
-//   export type HTMLSelect = HTMLSelectElement
-//   export type HTMLTextArea = HTMLTextAreaElement
+  type Value = string | boolean | number | null
+  type Json = { [k: string]: Value | Value[] | Json }
+ 
+  type HTMLElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
 
-//   export type Reducer<T> = [T, React.Dispatch<T>]
-// }
+  type Dispatcher<T> = [T, React.Dispatch<T>]
+}
 
-// export default Types;
+export default Types;

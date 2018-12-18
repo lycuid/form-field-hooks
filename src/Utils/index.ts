@@ -1,11 +1,11 @@
-import { Field } from '../Interfaces';
+import { Types, Field } from '../Interfaces';
 
 // needs to be in every high-level field hook just before the custom
 // event handling function ends.
 // exactly vice versa of `preventDefault` as it runs in the very beginning.
-export const continueDefault = <T extends {}>(
-  e: React.ChangeEvent<T>,
-  state: Field.Attributes | Field.TextAreaAttributes,
+export const continueDefault = (
+  e: React.ChangeEvent<Types.HTMLElement>,
+  state: Field.HTMLGenericAttributes,
   action: string
 ): void => 
 {

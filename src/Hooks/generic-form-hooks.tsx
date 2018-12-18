@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Field } from '../Interfaces';
+import { Types, Field } from '../Interfaces';
 import { useStateReducer } from "./form-reducers";
 
 import { continueDefault } from '../Utils';
@@ -11,11 +11,12 @@ let { useEffect } = React;
  * @param attributes should be valid HTML-DOM input attributes.
  * @param options: reference -> Field.Options 
  */
-export const useField = (
-  attributes: Field.Attributes,
+export const useField = <T extends {}>(
+  attributes: Field.HTMLGenericAttributes,
   options?: Field.Options
-): Field.BasicElement =>
+): Field.BasicElement<T> =>
 {
+  
   // By default setting it to text as there are some jquery/querySelectors, 
   // dependent on the type of the input itself.
   attributes.type = attributes.type || '';
@@ -23,55 +24,65 @@ export const useField = (
   const defaultMeta: Field.Meta = {
     touched: false,
     dirty: false,
+    show: true,
     valid: true,
-    show: true
   };
 
-  let [state, dispatchState]: Types.Reducer<any> = useStateReducer(attributes);
-  let [meta, dispatchMeta]: Types.Reducer<any> = useStateReducer(defaultMeta);
-  
+  let [attr, dispatchAttr]: Types.Dispatcher<any> = useStateReducer(attributes);
+  let [meta, dispatchMeta]: Types.Dispatcher<any> = useStateReducer(defaultMeta);
+  let [opts, dispatchOptions]: Types.Dispatcher<Field.Options> = useStateReducer(options);
   /**
    * @param defaultValid just in case if any validations needs
    * to be run before `sanitize`.
    * 
-   * local function, so the state, dispatch etc is accessable, rather
+   * local function, so the attr, dispatch etc is accessable, rather
    * than passing as argument, which can get a little messy in this case.
    */
-  const sanitize = (defaultValid: boolean) => {
+  const sanitize = (defaultValid: boolean, defaultShow: boolean) => {
     // run-validations
-    const valid: boolean = (options && options.validations) ?
-    (options.validations(state) && defaultValid) : defaultValid;
-    
-    valid !== state.valid && dispatchMeta({ valid, show: valid });
+    if (opts) {
+      var defaultMeta: any = {};
+
+      const valid: boolean = opts.validations ?
+        (opts.validations(attr) && defaultValid) : defaultValid;
+      const show: boolean = opts.display ?
+        (opts.display(attr) && defaultShow) : defaultShow;
+
+      if (valid !== meta.valid) defaultMeta.valid = valid;
+      if (show !== meta.show) defaultMeta.show = show;
+
+      Object.keys(defaultMeta).length && dispatchMeta(defaultMeta);
+    }
   }
 
   // Event Handlers.
   const onBlur: Types.Void = (e: any) => {
     if (!meta.touched) dispatchMeta({ touched: true });
-    sanitize(e.target.validity.valid);
-    continueDefault(e, state, 'onBlur');
+    sanitize(e.target.validity.valid, true);
+    continueDefault(e, attr, 'onBlur');
   }
 
   const onFocus: Types.Void = (e: any) => {
     if (!meta.touched) dispatchMeta({ touched: true });
-    sanitize(e.target.validity.valid);
-    continueDefault(e, state, 'onFocus');
+    sanitize(e.target.validity.valid, true);
+    continueDefault(e, attr, 'onFocus');
   }
-  
-  // effects: cDM, cDU.
-  // state specific cDU, called only when `state.value` is updated.
-  useEffect(() => {
-    // checks if new 'state.value' is equal to the originally provided
-    // 'value' in 'Attributes'.
-    if (attributes.value != state.value && !meta.dirty)
-      dispatchMeta({ dirty: true });
-    sanitize(true);
-  }, [state.value]);
-  
 
-  const field: Field.BasicElement = {
-    state: {...state, onBlur, onFocus}, dispatchState,
-    meta, dispatchMeta, sanitize
+  // effects: cDM, cDU.
+  // attr specific cDU, called only when `attr.value` is updated.
+  useEffect(() => {
+    // checks if new 'attr.value' is equal to the originally provided
+    // 'value' in 'Attributes'.
+    if (!meta.dirty && attributes.value != attr.value)
+      dispatchMeta({ dirty: true });
+    sanitize(true, true);
+  }, [attr.value]);
+
+  useEffect(() => sanitize(true, true), [opts]);
+
+  const field: Field.BasicElement<T> = {
+    attr: {...attr, onBlur, onFocus}, dispatchAttr,
+    meta, dispatchMeta, sanitize, dispatchOptions
   };
 
   return field;
@@ -79,18 +90,19 @@ export const useField = (
 
 
 
-export const useCheckableField = (
-  attributes: Field.Attributes,
+export const useCheckableField = <T extends {}>(
+  attributes: Field.InputAttributes,
   options?: Field.Options
-): Field.BasicElement =>
+): Field.BasicElement<T> =>
 {
   // extending `useField` for checkableField.
   let {
-    state,
-    dispatchState,
+    attr,
+    dispatchAttr,
     meta,
     dispatchMeta,
-    sanitize
+    sanitize,
+    dispatchOptions
   } = useField(attributes, (options || {}) as Field.Options);
 
   // effects: cDM, cDU.
@@ -98,12 +110,12 @@ export const useCheckableField = (
   // attribute for updating `meta`, rest should be handled in `useField`.
   useEffect(() => {
     // we wont check value as it is already been handled in `useField`.
-    if (attributes.checked !== state.checked && !meta.dirty)
+    if (attributes.checked !== attr.checked && !meta.dirty)
       dispatchMeta({ dirty: true });
     sanitize(true);
-  }, [state.checked]);
+  }, [attr.checked]);
 
-  return { state, dispatchState, meta, dispatchMeta, sanitize };
+  return { attr, dispatchAttr, meta, dispatchMeta, sanitize, dispatchOptions };
 }
 
 
@@ -133,62 +145,75 @@ export const useTextAreaField = (
     show: true
   };
 
-  let [state, dispatchState]: Types.Reducer<any> = useStateReducer(attributes);
-  let [meta, dispatchMeta]: Types.Reducer<any> = useStateReducer(defaultMeta);
-  
+  let [attr, dispatchAttr]: Types.Dispatcher<any> = useStateReducer(attributes);
+  let [meta, dispatchMeta]: Types.Dispatcher<any> = useStateReducer(defaultMeta);
+  let [opts, dispatchOptions]: Types.Dispatcher<Field.Options> = useStateReducer(options);
+
   /**
    * @param defaultValid just in case if any validations needs
    * to be run before `sanitize`.
    * 
-   * local function, so the state, dispatch etc is accessable, rather
+   * local function, so the attr, dispatch etc is accessable, rather
    * than passing as argument, which can get a little messy in this case.
    */
-  const sanitize = (defaultValid: boolean) => {
+  const sanitize = (defaultValid: boolean, defaultShow: boolean) => {
     // run-validations
-    const valid: boolean = (options && options.validations) ?
-    (options.validations(state) && defaultValid) : defaultValid;
-    
-    valid !== state.valid && dispatchMeta({ valid, show: valid });
+    if (opts) {
+      var defaultMeta: any = {};
+
+      const valid: boolean = opts.validations ?
+        (opts.validations(attr) && defaultValid) : defaultValid;
+      const show: boolean = opts.display ?
+        (opts.display(attr) && defaultShow) : defaultShow;
+
+      if (valid !== meta.valid) defaultMeta.valid = valid;
+      if (show !== meta.show) defaultMeta.show = show;
+
+      Object.keys(defaultMeta).length && dispatchMeta(defaultMeta);
+    }
   }
 
   // Event Handlers.
   const onChange: Types.Void = (
-    e: React.ChangeEvent<Types.HTMLTextArea>
+    e: React.ChangeEvent<HTMLTextAreaElement>
   ) =>
   {
     const { value } = e.target;
-    dispatchState({ value });
-    continueDefault<Types.HTMLTextArea>(e, state, 'onChange');
+    dispatchAttr({ value });
+    continueDefault(e, attr, 'onChange');
   }
 
   const onBlur: Types.Void = (e: any) => {
     if (!meta.touched) dispatchMeta({ touched: true });
-    sanitize(e.target.validity.valid);
-    continueDefault(e, state, 'onBlur');
+    sanitize(e.target.validity.valid, true);
+    continueDefault(e, attr, 'onBlur');
   }
 
   const onFocus: Types.Void = (e: any) => {
     if (!meta.touched) dispatchMeta({ touched: true });
-    sanitize(e.target.validity.valid);
-    continueDefault(e, state, 'onFocus');
+    sanitize(e.target.validity.valid, true);
+    continueDefault(e, attr, 'onFocus');
   }
-  
-  // effects: cDM, cDU.
-  // state specific cDU, called only when `state.value` is updated.
-  useEffect(() => {
-    // checks if new 'state.value' is equal to the originally provided
-    // 'value' in 'Attributes'.
-    if (attributes.value != state.value && !meta.dirty)
-      dispatchMeta({ dirty: true });
-    sanitize(true);
-  }, [state.value]);
-  
 
-  const field: Field.TextAreaElement = {
-    attr: {...state, onChange, onBlur, onFocus}, setAttr: dispatchState, meta
+  // effects: cDM, cDU.
+  // attr specific cDU, called only when `attr.value` is updated.
+  useEffect(() => {
+    // checks if new 'attr.value' is equal to the originally provided
+    // 'value' in 'Attributes'.
+    if (attributes.value != attr.value && !meta.dirty)
+      dispatchMeta({ dirty: true });
+    sanitize(true, true);
+  }, [attr.value]);
+
+  useEffect(() => sanitize(true, true), [opts]);
+
+  const element: Field.TextAreaElement = {
+    attr: {...attr, onChange, onBlur, onFocus}, dispatchAttr,
+    meta, dispatchMeta, dispatchOptions,
+    sanitize, fieldType: 'textarea'
   };
 
-  return field;
+  return element;
 }
 
 
