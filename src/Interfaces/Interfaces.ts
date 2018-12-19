@@ -68,8 +68,8 @@ declare namespace Field {
     FormElementProps<TextAreaElement>  {}
 
   interface SelectDefaultOption {
-    value: string
-    label: string
+    value?: string
+    label?: string
     hideAfter?: boolean
   }
 

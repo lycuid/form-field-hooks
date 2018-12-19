@@ -6,7 +6,7 @@ export class Input extends React.PureComponent<Field.FormInputProps, {}> {
   constructor(props: Field.FormInputProps) { super(props); }
   render() {
     const { element, show, ...rest } = this.props;
-    element.sanitize(true, true);
+    element.sanitize({});
     return (
       <>
         {element.meta.show && (show || true) &&
@@ -20,21 +20,27 @@ export class Input extends React.PureComponent<Field.FormInputProps, {}> {
 export class Select extends React.PureComponent<Field.FormSelectProps, {}> {
   constructor(props: Field.FormSelectProps) { super(props as Field.FormSelectProps); }
 
-  hide = (element: Field.Element, defaultOption: Field.SelectDefaultOption): React.ReactNode => (
+  option = (element: Field.Element, defaultOption: Field.SelectDefaultOption):
+  React.ReactNode => (
     defaultOption.hideAfter ?
-      (!element.attr.value.length && <option value={defaultOption.value}>{defaultOption.label}</option>) :
-      (<option value=''></option>)
+      (!element.attr.value.length &&
+        <option value={defaultOption.value || ''}>
+          {defaultOption.label || ''}
+        </option>) :
+      (<option value={defaultOption.value || ''}>
+        {defaultOption.label || ''}
+      </option>)
   )
 
   render() {
     const { element, defaultOption, show, children, ...rest } = this.props;
-    element.sanitize(true, true);
+    element.sanitize({});
     
     return (
       <>
         {element.meta.show && (show || true) && (
           <select {...rest} {...element.attr} >
-            {defaultOption && this.hide(element, defaultOption)}
+            {defaultOption && this.option(element, defaultOption)}
             {children}
           </select>
         )}
@@ -48,7 +54,7 @@ export class TextArea extends React.PureComponent<Field.FormTextAreaProps, {}> {
   constructor(props: Field.FormTextAreaProps) { super(props); }
   render() {
     const { element, show, ...rest } = this.props;
-    element.sanitize(true, true);
+    element.sanitize({});
     return (
       <>
         {element.meta.show && (show || true) && (

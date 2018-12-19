@@ -191,7 +191,7 @@ export const useRadioGroup = (
     // will only execute when `groupValue` is updated.
     useEffect(() => {
       dispatchAttr({ checked: groupValue === attr.value });
-      sanitize(true);
+      sanitize({});
     }, [groupValue]);
 
     var element = {

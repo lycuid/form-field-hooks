@@ -22,7 +22,7 @@ stateful input field hooks built with react-hooks (experimental), making stuff l
 | dispatchAttr:<br />`(...attr) => void` | `setState` for attr |
 | dispatchMeta:<br />`(...meta) =>  void` | `setState` for meta |
 | dispatchOptions:<br />`(...options) =>  void` | `setState` for options |
-| sanitize:<br />`(defaultValid, defaultShow) => void` | `setState` for meta |
+| sanitize:<br />`({valid?: boolean, show?: boolean}) => void` | `setState` for meta,<br />_(provided options run in this method)_ |
 | fieldType: `string` | type of html field<br />(`input`, `checkbox`, `textarea` etc) |
 
 *_Meta:_*
@@ -43,8 +43,7 @@ stateful input field hooks built with react-hooks (experimental), making stuff l
 | property | description |
 | ------ | ------- |
 | defaultValue: `string` \| `null` | default selected radio |
-| current: `string` | selected option |
-| fieldType: `string` | always 'radio-group' |
+| params: `[{attributes: {}, options: {}}]` | Array of &lsaquo;same as the above Fields&rsaquo;. |
 
 *_Output Element:_*
 
@@ -68,7 +67,7 @@ import Form, {
 }from 'field-hooks-react';
 ```
 
-### Input Element (can be any &lt;input&gt;)
+### 'useInput' (Input Element, can be any &lt;input /&gt;)
 ```jsx
 const InputElements = () => {
   const name = useInput({value: 'luffy', name: 'name'});
@@ -95,7 +94,7 @@ const InputElements = () => {
 }
 ```
 
-### Radio Elements
+### 'useRadioGroup' Radio Elements
 ```jsx
 const RadioElements = () => {
   // radio-group
@@ -122,7 +121,7 @@ const RadioElements = () => {
 }
 ```
 
-### Select Element:
+### 'useSelect' Select Element:
 ```jsx
   const SelectElement = () => {
     const select = useSelect({value: '', name: 'select'});
@@ -150,7 +149,7 @@ const RadioElements = () => {
   }
 ```
 
-### TextArea Element
+### 'useTextArea' TextArea Element
 ```jsx
   const TextAreaElement = () => {
     const description = useTextArea({value: '', name: 'description'});
