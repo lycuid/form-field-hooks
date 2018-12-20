@@ -3,6 +3,7 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react",
     "module": "commonjs",
+    "declaration": true,
     "outDir": "./dist/",
     "preserveConstEnums": true,
     "removeComments": true,
