@@ -1,19 +1,19 @@
 {
 	"name": "field-hooks-react",
-	"main": "dist/index.js",
-	"typings": "dist/index.d.ts",
-	"version": "1.0.4",
-	"description": "field-hooks-react",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/abhishek-kdm/field-hooks-react.git"
 	},
+  "homepage": "https://github.com/abhishek-kdm/field-hooks-react#readme",
+	"main": "dist/bundle.js",
+	"typings": "dist/index.d.ts",
+	"version": "1.0.0",
+	"description": "field-hooks-react",
 	"author": "Abhishek Kadam",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/abhishek-kdm/field-hooks-react/issues"
 	},
-	"homepage": "https://github.com/abhishek-kdm/field-hooks-react#readme",
 	"scripts": {
 		"build": "webpack --color --progress -p --config webpack/webpack.prod.js",
 		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js"

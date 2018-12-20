@@ -6,7 +6,10 @@ var exports = module.exports = { fileBaseName };
 
 exports.baseConfigs = {
 	entry: path.resolve('src', 'index.ts'),
-	output: { filename: `${fileBaseName}.js` },
+	output: {
+		libraryTarget: 'umd',
+		filename: `${fileBaseName}.js`
+	},
 	module: {
 		rules: [
 			{
