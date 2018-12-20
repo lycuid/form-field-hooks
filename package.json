@@ -16,7 +16,7 @@
 	"homepage": "https://github.com/abhishek-kdm/field-hooks-react#readme",
 	"scripts": {
 		"build": "webpack --color --progress -p --config webpack/webpack.prod.js",
-		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js",
+		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js"
 	},
 	"devDependencies": {
 		"@types/react": "^16.7.6",
