@@ -51,8 +51,8 @@ declare namespace Field {
    * Generic second parameter for all Fields.
    */
   interface Options extends ObjectInterface {
-    validations: (a: Object) => boolean
-  }  
+    validations: (a: object) => boolean
+  }
 
 
   interface FormElementProps<ElementType> {
@@ -98,7 +98,7 @@ declare namespace Field {
     valid: boolean
     show: boolean
   }
-  
+
   /** for low level Field hooks. */
   interface BasicElement<T> {
     attr: T
@@ -110,7 +110,7 @@ declare namespace Field {
     dispatchOptions: Types.Void
     fieldType?: string
   }
-  
+
   /** high level generic Field hook. */
   interface Element extends ObjectInterface {
     attr: InputAttributes | TextAreaAttributes | SelectAttributes

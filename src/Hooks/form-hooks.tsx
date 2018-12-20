@@ -49,7 +49,7 @@ export const useInput = (
  * @todo somehow make this a high leve hook
  * 
  * @param attributes Valid Text Area attributes
- * @param options 
+ * @param options
  */
 export const useTextArea = (
   attributes: Field.TextAreaAttributes,
@@ -98,7 +98,7 @@ export const useSelect = (
     meta, dispatchMeta, dispatchOptions,
     sanitize, fieldType: 'select'
   };
-  
+
 
   return element;
 }
@@ -144,7 +144,7 @@ export const useCheckbox = (
 
 
 /**
- * This hook returns an object in order to 
+ * This hook returns an object in order to
  */
 
 export const useRadioGroup = (
@@ -158,12 +158,12 @@ export const useRadioGroup = (
 
   // being a radio group, needs to be controlled as we'll have
   // a root value (`groupValue`).
-  // And each radio being a controlled element, 
-  // only need to control the root value and the state of all the 
+  // And each radio being a controlled element,
+  // only need to control the root value and the state of all the
   // radios in the group should be updated eventually.
   let [groupValue, setGroupValue] = useState(defaultValue);
 
-  var radioGroup: Field.InputElement[] = [];
+  let radioGroup: Field.InputElement[] = [];
 
   for (let { attributes, options } of params) {
 
@@ -177,7 +177,7 @@ export const useRadioGroup = (
     }, options);
 
 
-    var onChange: Types.Void = (
+    let onChange: Types.Void = (
       e: React.ChangeEvent<HTMLInputElement>
     ) =>
     {
@@ -194,7 +194,7 @@ export const useRadioGroup = (
       sanitize({});
     }, [groupValue]);
 
-    var element = {
+    let element = {
       attr: {...attr, onChange}, dispatchAttr,
       meta, dispatchMeta, dispatchOptions,
       sanitize, fieldType: 'radio'
@@ -202,7 +202,7 @@ export const useRadioGroup = (
 
     radioGroup.push(element);
   }
-  
+
   let elements: Field.RadioElements = {
     current: [groupValue, setGroupValue],
     elements: radioGroup,

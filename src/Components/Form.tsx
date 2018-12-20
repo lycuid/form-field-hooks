@@ -35,7 +35,7 @@ export class Select extends React.PureComponent<Field.FormSelectProps, {}> {
   render() {
     const { element, defaultOption, show, children, ...rest } = this.props;
     element.sanitize({});
-    
+
     return (
       <>
         {element.meta.show && (show || true) && (

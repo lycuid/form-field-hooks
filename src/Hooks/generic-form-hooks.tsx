@@ -41,7 +41,7 @@ export const useField = <T extends {}>(
   const sanitize = (defaultValid: boolean, defaultShow: boolean) => {
     // run-validations
     if (opts) {
-      var defaultMeta: any = {};
+      let defaultMeta: any = {};
 
       const valid: boolean = opts.validations ?
         (opts.validations(attr) && defaultValid) : defaultValid;
@@ -159,7 +159,7 @@ export const useTextAreaField = (
   const sanitize = (defaultValid: boolean, defaultShow: boolean) => {
     // run-validations
     if (opts) {
-      var defaultMeta: any = {};
+      let defaultMeta: any = {};
 
       const valid: boolean = opts.validations ?
         (opts.validations(attr) && defaultValid) : defaultValid;

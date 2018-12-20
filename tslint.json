@@ -8,6 +8,23 @@
     "quotemark": false,
     "no-console": false,
     "no-consecutive-blank-lines": false,
+    "semicolon": false,
+    "no-namespace": false,
+    "interface-name": false,
+    "no-empty-interface": false,
+    "one-line": false,
+    "prefer-const": false,
+    "max-classes-per-file": false,
+    "member-access": false,
+    "object-literal-sort-keys": false,
+    "array-type": false,
+    "trailing-comma": false,
+    "curly": false,
+    "no-shadowed-variable": false,
+    "no-trailing-whitespace": false,
+    "ordered-imports": false,
+    "no-unused-expression": false,
+    "triple-equals": false
   },
   "rulesDirectory": []
 }
