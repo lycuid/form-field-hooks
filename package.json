@@ -1,18 +1,18 @@
 {
-	"name": "field-hooks-react",
+	"name": "form-field-hooks",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/abhishek-kdm/field-hooks-react.git"
+		"url": "git+https://github.com/abhishek-kdm/form-field-hooks.git"
 	},
-  "homepage": "https://github.com/abhishek-kdm/field-hooks-react#readme",
+  "homepage": "https://github.com/abhishek-kdm/form-field-hooks#readme",
 	"main": "dist/bundle.js",
 	"typings": "dist/index.d.ts",
 	"version": "1.0.0",
-	"description": "field-hooks-react",
+	"description": "form-field-hooks",
 	"author": "Abhishek Kadam",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/abhishek-kdm/field-hooks-react/issues"
+		"url": "https://github.com/abhishek-kdm/form-field-hooks/issues"
 	},
 	"scripts": {
 		"build": "webpack --color --progress -p --config webpack/webpack.prod.js",
