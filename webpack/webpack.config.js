@@ -16,16 +16,12 @@ exports.baseConfigs = {
 				test: /\.ts|tsx?$/,
 				include: path.resolve(__dirname, '..'),
 				loader: 'awesome-typescript-loader'
-			},
-			{
-				test: /\.css$/,
-				loader: 'style-loader!css-loader'
-			},
+			}
 		]
 	},
 
 	resolve: {
-		modules: [path.resolve('node_modules'), path.resolve('src'), path.resolve('assets')],
-		extensions: ['.js', '.jsx', '.ts', '.tsx', '.css']
+		modules: [path.resolve('node_modules'), path.resolve('src')],
+		extensions: ['.js', '.jsx', '.ts', '.tsx']
 	}
 }

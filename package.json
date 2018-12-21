@@ -16,7 +16,8 @@
 	},
 	"scripts": {
 		"build": "webpack --color --progress -p --config webpack/webpack.prod.js",
-		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js"
+		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js",
+		"dev": "webpack --color --progress -d --watch --config webpack.config.js"
 	},
 	"devDependencies": {
 		"@types/react": "^16.7.17",
@@ -26,7 +27,7 @@
 		"react": "^16.7.0-alpha.2",
 		"react-dom": "^16.7.0-alpha.2",
 		"tslint": "^5.12.0",
-		"typescript": "^3.1.6",
+		"typescript": "^3.2.2",
 		"webpack": "^4.11.1",
 		"webpack-cli": "^3.0.2",
 		"webpack-merge": "^4.1.4"
