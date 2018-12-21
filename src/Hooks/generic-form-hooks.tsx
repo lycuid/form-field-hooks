@@ -38,15 +38,17 @@ export const useField = <T extends {}>(
    * local function, so the attr, dispatch etc is accessable, rather
    * than passing as argument, which can get a little messy in this case.
    */
-  const sanitize = (defaultValid: boolean, defaultShow: boolean) => {
+  const sanitize = ({valid, show}: {valid?: boolean, show?: boolean}) => {
     // run-validations
+    valid = valid !== undefined ? valid : true;
+    show = show !== undefined ? show : true;
     if (opts) {
       let defaultMeta: any = {};
 
-      const valid: boolean = opts.validations ?
-        (opts.validations(attr) && defaultValid) : defaultValid;
-      const show: boolean = opts.display ?
-        (opts.display(attr) && defaultShow) : defaultShow;
+      valid = opts.validations ?
+        (opts.validations(attr) && valid) : valid;
+      show = opts.display ?
+        (opts.display(attr) && show) : show;
 
       if (valid !== meta.valid) defaultMeta.valid = valid;
       if (show !== meta.show) defaultMeta.show = show;
@@ -58,13 +60,15 @@ export const useField = <T extends {}>(
   // Event Handlers.
   const onBlur: Types.Void = (e: any) => {
     if (!meta.touched) dispatchMeta({ touched: true });
-    sanitize(e.target.validity.valid, true);
+    const { valid } = e.target.validity;
+    sanitize({ valid });
     continueDefault(e, attr, 'onBlur');
   }
-
+  
   const onFocus: Types.Void = (e: any) => {
     if (!meta.touched) dispatchMeta({ touched: true });
-    sanitize(e.target.validity.valid, true);
+    const { valid } = e.target.validity;
+    sanitize({ valid });
     continueDefault(e, attr, 'onFocus');
   }
 
@@ -75,10 +79,10 @@ export const useField = <T extends {}>(
     // 'value' in 'Attributes'.
     if (!meta.dirty && attributes.value != attr.value)
       dispatchMeta({ dirty: true });
-    sanitize(true, true);
+    sanitize({});
   }, [attr.value]);
 
-  useEffect(() => sanitize(true, true), [opts]);
+  useEffect(() => sanitize({}), [opts]);
 
   const field: Field.BasicElement<T> = {
     attr: {...attr, onBlur, onFocus}, dispatchAttr,

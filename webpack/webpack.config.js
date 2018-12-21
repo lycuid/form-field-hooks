@@ -5,7 +5,7 @@ const fileBaseName = 'bundle';
 var exports = module.exports = { fileBaseName };
 
 exports.baseConfigs = {
-	entry: resolve('src', 'index.ts'),
+	entry: resolve('src', 'index.tsx'),
 	output: {
 		libraryTarget: 'umd',
 		filename: `${fileBaseName}.js`

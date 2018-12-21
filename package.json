@@ -16,7 +16,7 @@
 	},
 	"scripts": {
 		"build": "webpack --color --progress -p --config webpack/webpack.prod.js",
-		"watch": "webpack --color --progress -d --config webpack/webpack.dev.js",
+		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js",
 		"test": "webpack --color --progress -d --watch --config testing/webpack.config.js"
 	},
 	"devDependencies": {
