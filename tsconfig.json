@@ -12,6 +12,6 @@
     "target": "es6",
   },
   "include": [
-    "./src/**/*", "dist/Interfaces/Interfaces.d.ts", "dist/Interfaces/index.d.ts"
+    "./src/**/*"
   ]
 }
