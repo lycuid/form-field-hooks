@@ -19,8 +19,8 @@
 		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js"
 	},
 	"devDependencies": {
-		"@types/react": "^16.7.6",
-		"@types/react-dom": "^16.0.9",
+		"@types/react": "*",
+		"@types/react-dom": "*",
 		"awesome-typescript-loader": "^5.2.1",
 		"path": "^0.12.7",
 		"react": "^16.7.0-alpha.2",
