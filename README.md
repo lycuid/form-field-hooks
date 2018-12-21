@@ -1,9 +1,10 @@
-# useField-hook-experimental
-stateful input field hooks built with react-hooks (experimental), making stuff like validations and 'should display' easy to use.
+# form-field-hooks (React)
+stateful input field hooks built with react-hooks, for ease of validations etc.
 
 
-## Usage
-### Fields:<br />
+
+## Attributes and return types
+### Input fields:
 (`useInput`,&nbsp; `useSelect`,&nbsp; `useTextArea`,&nbsp; `useCheckbox`)<br />
 
 *_Input Parameters:_*
@@ -11,7 +12,7 @@ stateful input field hooks built with react-hooks (experimental), making stuff l
 | property | description |
 | ------ | ------ |
 | attributes: `{}` | valid html input attributes |
-| options: <br />`{validations: (attr) => void, display: (attr) => void}` | these functions are called to<br />set meta and while `sanitize()` |
+| options: <br />`{validations: (attr) => void, display: (attr) => void}` | these functions are called to<br />set `meta` and while `sanitize()` |
 
 *_Output Element:_*
 
@@ -43,13 +44,13 @@ stateful input field hooks built with react-hooks (experimental), making stuff l
 | property | description |
 | ------ | ------- |
 | defaultValue: `string` \| `null` | default selected radio |
-| params: `[{attributes: {}, options: {}}]` | Array of &lsaquo;same as the above Fields&rsaquo;. |
+| params: `[{attributes: {}, options: {}}]` | Array of Field Inputs<br />&lsaquo;same as the above Fields&rsaquo;. |
 
 *_Output Element:_*
 
 | property | description |
 | ------ | ------- |
-| elements: `Field[]` | Array of &lsaquo;same as the above Fields&rsaquo;. |
+| elements: `Field[]` | Array of Input Fields (type=radio)<br />&lsaquo;same as the above Fields&rsaquo;. |
 | current: `string` | selected option |
 | fieldType: `string` | always 'radio-group' |
 
@@ -64,10 +65,50 @@ import Form, {
   useCheckbox,
   useRadioGroup,
   useTextArea
-}from 'field-hooks-react';
+} from 'form-field-hooks';
 ```
 
-### 'useInput' (Input Element, can be any &lt;input /&gt;)
+### validations and display
+```jsx
+const InputElement = () => {
+  const name = useInput(
+    {value: '', name: 'passwd', type: 'password'},
+    {
+      // this is to set the properties of the field's `meta`
+      validations: (attr) => attr.value.length < 7,
+      display: (attr) => {
+        if (attr.className && attr.className.includes('hide-input'))
+          return false;
+        return true;
+      }
+    }
+  );
+
+  const { touched, dirty, show, valid } = name.meta;
+  const style = {boderColor: (touched || dirty) && !valid ? 'red' : 'none'};
+
+  return (
+    <>
+      {/*
+        * Using `Form` has a couple of advantages,
+        * -> sanitize is run everytime before render.
+        * -> will only show if `meta.show` is true
+        * -> able to add defaultOption in case of <Form.Select />
+        */}
+
+      <Form.Input element={name} style={style} />
+
+
+      {/* Or using without `Form` */}
+
+      <>{show && <input element={name} style={style} />}</>
+    </>
+  )
+}
+```
+
+# Using the Hooks
+### 'useInput' (Input field, can be any `<input />` except radio button)
 ```jsx
 const InputElements = () => {
   const name = useInput({value: 'luffy', name: 'name'});
@@ -94,7 +135,7 @@ const InputElements = () => {
 }
 ```
 
-### 'useRadioGroup' Radio Elements
+### 'useRadioGroup' (`<input type="radio" />` field)
 ```jsx
 const RadioElements = () => {
   // radio-group
@@ -121,7 +162,7 @@ const RadioElements = () => {
 }
 ```
 
-### 'useSelect' Select Element:
+### 'useSelect' (`<select />` field):
 ```jsx
   const SelectElement = () => {
     const select = useSelect({value: '', name: 'select'});
@@ -129,6 +170,14 @@ const RadioElements = () => {
 
     return (
       <>
+        {/*
+          * Here the `defaultOption` attr will add
+          * an extra null option
+          * value: the value of the default option.
+          * label: display value for the default option.
+          * hideAfter: remove default option on any other value selection.
+          */}
+
         <Form.Select
           element={select}
           defaultOption={{ value: '', label: '--', hideAfter: true}}
@@ -142,14 +191,14 @@ const RadioElements = () => {
         {/** can also use
           * <select {...multiselect.attr}>
           * ...
-          * </Form.Select>
+          * </select>
           */}
       </>
     )
   }
 ```
 
-### 'useTextArea' TextArea Element
+### 'useTextArea' (`<textarea />` field)
 ```jsx
   const TextAreaElement = () => {
     const description = useTextArea({value: '', name: 'description'});
