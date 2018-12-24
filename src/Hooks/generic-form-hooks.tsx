@@ -17,10 +17,6 @@ export const useField = <T extends {}>(
 ): Field.BasicElement<T> =>
 {
   
-  // By default setting it to text as there are some jquery/querySelectors, 
-  // dependent on the type of the input itself.
-  attributes.type = attributes.type || '';
-
   const defaultMeta: Field.Meta = {
     touched: false,
     dirty: false,
