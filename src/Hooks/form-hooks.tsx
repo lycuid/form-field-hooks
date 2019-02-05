@@ -5,12 +5,11 @@ import { useField, useCheckableField, useTextAreaField } from './generic-form-ho
 
 import { continueDefault } from '../Utils';
 
-let { useEffect, useState } = React;
-
 
 export const useInput = (
   attributes: Field.InputAttributes,
-  options?: Field.Options
+  options?: Field.Options,
+  react?: any,
 ): Field.InputElement =>
 {
 
@@ -18,7 +17,7 @@ export const useInput = (
     attr, dispatchAttr,
     meta, dispatchMeta,
     sanitize, dispatchOptions
-  } = useField<Field.InputAttributes>(attributes, options);
+  } = useField(attributes, options, (react || React));
 
   /**
    * The dom is updated almost instantly,
@@ -53,8 +52,37 @@ export const useInput = (
  */
 export const useTextArea = (
   attributes: Field.TextAreaAttributes,
-  options?: Field.Options
-): Field.TextAreaElement => useTextAreaField(attributes, options);
+  options?: Field.Options,
+  react?: any,
+): Field.TextAreaElement => {
+  let {
+    attr, dispatchAttr,
+    meta, dispatchMeta,
+    sanitize, dispatchOptions
+  } = useTextAreaField(attributes, options, (react || React));
+
+  /**
+   * The dom is updated almost instantly,
+   * but the attr object wont.
+   */
+  const onChange: Types.Void = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) =>
+  {
+    const { value } = e.target;
+
+    dispatchAttr({ value });
+    continueDefault(e, attr, 'onChange');
+  }
+
+  let element: Field.TextAreaElement = {
+    attr: {...attr, onChange}, dispatchAttr,
+    meta, dispatchMeta, dispatchOptions,
+    sanitize, fieldType: attr.type
+  };
+
+  return element;
+}
 
 
 
@@ -62,15 +90,17 @@ export const useTextArea = (
 
 export const useSelect = (
   attributes: Field.SelectAttributes,
-  options?: Field.Options
+  options?: Field.Options,
+  react?: any,
 ): Field.SelectElement =>
 {
+  const { suppressChange, ...rest } = attributes;
 
   let {
     attr, dispatchAttr,
     meta, dispatchMeta,
     sanitize, dispatchOptions
-  } = useField<Field.SelectAttributes>(attributes, options);
+  } = useField<Field.SelectAttributes>(rest, options, (react || React));
 
   // The dom is updated almost instantly, but the attr object isn't.
   const onChange: Types.Void = (
@@ -80,16 +110,18 @@ export const useSelect = (
     // @ts-ignore
     const { value, options } = e.target;
 
-    // Only in case of multiple select,
-    // we need to dispatch value as an array not a string.
-    if (attr.multiple) {
-      let newValue: string[] = Array.apply(null, options) // convert to array
-        .filter((option: any) => option.selected) // filter selected
-        .map((option: any) => option.value); // return only selected.
-
-      dispatchAttr({ value: newValue });
-    } else dispatchAttr({ value });
-
+    if (!suppressChange) {
+      // Only in case of multiple select,
+      // we need to dispatch value as an array not a string.
+      if (attr.multiple) {
+        let newValue: string[] = Array.apply(null, options) // convert to array
+          .filter((option: any) => option.selected) // filter selected
+          .map((option: any) => option.value); // return only selected.
+  
+        dispatchAttr({ value: newValue });
+      } else dispatchAttr({ value });
+    }
+        
     continueDefault(e, attr, 'onChange');
   }
 
@@ -109,7 +141,8 @@ export const useSelect = (
 
 export const useCheckbox = (
   attributes: Field.CheckboxAttributes,
-  options?: Field.Options
+  options?: Field.Options,
+  react?: any,
 ): Field.InputElement =>
 {
   let {
@@ -118,7 +151,8 @@ export const useCheckbox = (
     sanitize, dispatchOptions
   } = useCheckableField<Field.CheckboxAttributes>(
     {...attributes, type: 'checkbox'},
-    (options || {}) as Field.Options
+    (options || {}) as Field.Options,
+    (react || React)
   );
 
   const onChange: Types.Void = (
@@ -144,15 +178,17 @@ export const useCheckbox = (
 
 
 /**
- * This hook returns an object in order to
+ * @todo Fix this situation for radio buttons ->
+ * `hooks` can only be called at the `top level`. yet we are using them
+ * in a loop.
  */
-
 export const useRadioGroup = (
   defaultValue: string | null,
   params: {
     attributes: Field.RadioAttributes,
-    options?: Field.Options
-  }[]
+    options?: Field.Options,
+  }[],
+  react?: any,
 ): Field.RadioElements =>
 {
 
@@ -161,12 +197,11 @@ export const useRadioGroup = (
   // And each radio being a controlled element,
   // only need to control the root value and the state of all the
   // radios in the group should be updated eventually.
-  let [groupValue, setGroupValue] = useState(defaultValue);
+  let [groupValue, setGroupValue] = (react || React).useState(defaultValue);
 
   let radioGroup: Field.InputElement[] = [];
 
-  for (let { attributes, options } of params) {
-
+  const append = ({ attributes, options, react }: Field.InputAttributes) => {
     // create radio button with controlled `checked` attribute.
     let {
       attr, dispatchAttr,
@@ -174,7 +209,7 @@ export const useRadioGroup = (
       sanitize, dispatchOptions
     } = useCheckableField<Field.RadioAttributes>({
       ...attributes, type: 'radio', checked: !!attributes.checked
-    }, options);
+    }, options, (react || React));
 
 
     let onChange: Types.Void = (
@@ -189,7 +224,7 @@ export const useRadioGroup = (
 
     // effects: cDM, cDU
     // will only execute when `groupValue` is updated.
-    useEffect(() => {
+    (react || React).useEffect(() => {
       dispatchAttr({ checked: groupValue === attr.value });
       sanitize({});
     }, [groupValue]);
@@ -203,9 +238,14 @@ export const useRadioGroup = (
     radioGroup.push(element);
   }
 
+  for (let element of params) {
+    append(element);
+  }
+
+
   let elements: Field.RadioElements = {
     current: [groupValue, setGroupValue],
-    elements: radioGroup,
+    elements: radioGroup, append,
     fieldType: 'radio-elements'
   };
 

@@ -4,7 +4,7 @@
 		"type": "git",
 		"url": "git+https://github.com/abhishek-kdm/form-field-hooks.git"
 	},
-  "homepage": "https://github.com/abhishek-kdm/form-field-hooks#readme",
+	"homepage": "https://github.com/abhishek-kdm/form-field-hooks#readme",
 	"main": "dist/bundle.js",
 	"typings": "dist/index.d.ts",
 	"version": "0.0.1",
@@ -15,17 +15,16 @@
 		"url": "https://github.com/abhishek-kdm/form-field-hooks/issues"
 	},
 	"scripts": {
-		"build": "webpack --color --progress -p --config webpack/webpack.prod.js",
-		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js",
-		"test": "webpack --color --progress -d --watch --config testing/webpack.config.js"
+		"build": "rm -rf ./dist && webpack --color --progress -p --config webpack/webpack.prod.js",
+		"watch": "webpack --color --progress -d --watch --config webpack/webpack.dev.js"
 	},
 	"devDependencies": {
 		"@types/react": "^16.7.17",
 		"@types/react-dom": "^16.0.11",
 		"awesome-typescript-loader": "^5.2.1",
 		"path": "^0.12.7",
-		"react": "^16.7.0-alpha.2",
-		"react-dom": "^16.7.0-alpha.2",
+		"react": "^16.8.0-alpha.1",
+		"react-dom": "^16.8.0-alpha.1",
 		"tslint": "^5.12.0",
 		"typescript": "^3.2.2",
 		"webpack": "^4.11.1",

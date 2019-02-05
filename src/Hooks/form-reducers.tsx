@@ -2,8 +2,6 @@ import * as React from 'react';
 
 import { Types } from '../Interfaces';
 
-let { useReducer } = React;
-
 // Generic state reducer, behaviour some what similar to good ol'
 // react's `setState`.
 const stateReducer = (
@@ -13,8 +11,9 @@ const stateReducer = (
 
 
 // Generic reducer hook, can be used anywhere.
-export const useStateReducer = (
-  initialState: any
-): Types.Dispatcher<any> => useReducer(stateReducer, initialState);
+export const useStateReducer = <T extends {}>(
+  initialState: any,
+  react?: any
+): Types.Dispatcher<T> => (react || React).useReducer(stateReducer, initialState);
 
 

@@ -12,7 +12,7 @@ stateful input field hooks built with react-hooks, for ease of validations etc.
 | property | description |
 | ------ | ------ |
 | attributes: `{}` | valid html input attributes |
-| options: <br />`{validations: (attr) => void, display: (attr) => void}` | these functions are called to<br />set `meta` and while `sanitize()` |
+| options: <br />`{validations: (attr) => [boolean, string], display: (attr) => boolean}` | these functions are called to<br />set `meta` and while `sanitize()` |
 
 *_Output Element:_*
 
@@ -34,6 +34,7 @@ stateful input field hooks built with react-hooks, for ease of validations etc.
 | dirty: `boolean` | if value changed |
 | valid: `boolean` | is valid |
 | show: `boolean` | should display |
+| customValidity: `string` | error message if `valid` is `false` |
 
 
 ### Radio Group:<br />
@@ -75,7 +76,12 @@ const InputElement = () => {
     {value: '', name: 'passwd', type: 'password'},
     {
       // this is to set the properties of the field's `meta`
-      validations: (attr) => attr.value.length < 7,
+      validations: (attr) => {
+        if (attr.value.length < 8) {
+          return [false, 'should be atleast 8 characters long.'];
+        }
+        return [true, ''];
+      },
       display: (attr) => {
         if (attr.className && attr.className.includes('hide-input'))
           return false;

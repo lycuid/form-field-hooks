@@ -27,6 +27,7 @@ declare namespace Field {
     React.SelectHTMLAttributes<HTMLSelectElement>, ObjectInterface
   {
     value?: string | string[]
+    suppressChange?: boolean
   }
 
   /** valid HTML DOM Checkbox element attributes */
@@ -51,7 +52,8 @@ declare namespace Field {
    * Generic second parameter for all Fields.
    */
   interface Options extends ObjectInterface {
-    validations: (a: object) => boolean
+    validations?: (a: object) => [boolean, string]
+    display?: (a: object) => boolean
   }
 
 
@@ -97,6 +99,7 @@ declare namespace Field {
     dirty: boolean
     valid: boolean
     show: boolean
+    customValidity: string
   }
 
   /** for low level Field hooks. */
@@ -137,6 +140,7 @@ declare namespace Field {
   interface RadioElements {
     current: Types.Dispatcher<any>
     elements: InputElement[]
+    append: any
     fieldType: string
   }
 

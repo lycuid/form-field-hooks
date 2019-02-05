@@ -1,26 +1,38 @@
 import * as React from 'react';
 import { Field } from '../Interfaces';
 
+/**
+ * setting custom validity here.
+ * taking advantage of the `Validity` API for validation purposes.
+ */
 
-export class Input extends React.PureComponent<Field.FormInputProps, {}> {
-  constructor(props: Field.FormInputProps) { super(props); }
-  render() {
-    const { element, show, ...rest } = this.props;
-    element.sanitize({});
-    return (
-      <>
-        {element.meta.show && (show || true) &&
-          (<input {...rest} {...element.attr} />)}
-      </>
-    )
-  }
+
+const Input = (props: Field.FormInputProps) => {
+  const { element, show, _ref, react, ...rest } = props;
+  const inputRef = _ref || (react || React).useRef(null);
+  
+  element.sanitize({});
+  
+  (react || React).useEffect(() => {
+    inputRef.current &&
+      inputRef.current.setCustomValidity(element.meta.customValidity);
+  }, [element.meta.valid]);
+  
+  return (
+    <>
+      {element.meta.show && (show || true) &&
+        (<input {...element.attr} ref={inputRef} {...rest} />) }
+    </>
+  )
+  
 }
 
 
-export class Select extends React.PureComponent<Field.FormSelectProps, {}> {
-  constructor(props: Field.FormSelectProps) { super(props as Field.FormSelectProps); }
+const Select = (props: Field.FormSelectProps) => {
+  const { element, defaultOption, show, children, react, _ref, ...rest } = props;
+  const selectRef = _ref || (react || React).useRef(null);
 
-  option = (element: Field.Element, defaultOption: Field.SelectDefaultOption):
+  const option = (element: Field.Element, defaultOption: Field.SelectDefaultOption):
   React.ReactNode => (
     defaultOption.hideAfter ?
       (!element.attr.value.length &&
@@ -32,37 +44,46 @@ export class Select extends React.PureComponent<Field.FormSelectProps, {}> {
       </option>)
   )
 
-  render() {
-    const { element, defaultOption, show, children, ...rest } = this.props;
-    element.sanitize({});
 
-    return (
-      <>
-        {element.meta.show && (show || true) && (
-          <select {...rest} {...element.attr} >
-            {defaultOption && this.option(element, defaultOption)}
-            {children}
-          </select>
-        )}
-      </>
-    )
-  }
+  element.sanitize({});
+
+  (react || React).useEffect(() => {
+    selectRef.current &&
+      selectRef.current.setCustomValidity(element.meta.customValidity);
+  }, [element.meta.valid]);
+  
+  return (
+    <>
+      {element.meta.show && (show || true) && (
+        <select {...element.attr} ref={selectRef} {...rest}>
+          {defaultOption && option(element, defaultOption)}
+          {children}
+        </select>
+      )}
+    </>
+  )
+
 }
 
 
-export class TextArea extends React.PureComponent<Field.FormTextAreaProps, {}> {
-  constructor(props: Field.FormTextAreaProps) { super(props); }
-  render() {
-    const { element, show, ...rest } = this.props;
-    element.sanitize({});
-    return (
-      <>
-        {element.meta.show && (show || true) && (
-          <textarea {...rest} {...element.attr} />
-        )}
-      </>
-    )
-  }
+const TextArea = (props: Field.FormTextAreaProps) => {
+  const { element, show, _ref, react, ...rest } = props;
+  const textareaRef = (react || React).useRef(null);
+
+  element.sanitize({});
+
+  (react || React).useEffect(() => {
+    textareaRef &&
+      textareaRef.current.setCustomValidity(element.meta.customValidity);
+  }, [element.meta.valid]);
+  
+  return (
+    <>
+      {element.meta.show && (show || true) && (
+        <textarea {...element.attr} ref={textareaRef} {...rest} />
+      )}
+    </>
+  )
 }
 
 
