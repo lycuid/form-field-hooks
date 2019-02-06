@@ -13,6 +13,7 @@ stateful input field hooks built with react-hooks, for ease of validations etc.
 | ------ | ------ |
 | attributes: `{}` | valid html input attributes |
 | options: <br />`{validations: (attr) => [boolean, string], display: (attr) => boolean}` | these functions are called to<br />set `meta` and while `sanitize()` |
+| React | React's imported object (kinda necessary in the current version as it throws hooks related errors, would be fixed in the future) |
 
 *_Output Element:_*
 
@@ -37,7 +38,7 @@ stateful input field hooks built with react-hooks, for ease of validations etc.
 | customValidity: `string` | error message if `valid` is `false` |
 
 
-### Radio Group:<br />
+### Radio Group: <small>(not entirely development ready yet)</small><br />
 (`useRadioGroup`)<br />
 
 *_Input Parameters:_*
@@ -87,28 +88,30 @@ const InputElement = () => {
           return false;
         return true;
       }
-    }
+    }, React
   );
 
   const { touched, dirty, show, valid } = name.meta;
+
+  // An Example of how `meta can be useful`
   const style = {boderColor: (touched || dirty) && !valid ? 'red' : 'none'};
 
   return (
-    <>
-      {/*
-        * Using `Form` has a couple of advantages,
-        * -> sanitize is run everytime before render.
-        * -> will only show if `meta.show` is true
-        * -> able to add defaultOption in case of <Form.Select />
-        */}
+    <Fragment>
+
+      {/* Form.Input takes care of not rendering the input if `show` is False */}
 
       <Form.Input element={name} style={style} />
+      {(
+        !meta.valid &&
+        meta.customValidity.length // we get to set this in `options.validations`
+      ) ? <ErrorMessage msg={meta.customValidity} /> : <></>}
 
 
       {/* Or using without `Form` */}
 
       <>{show && <input element={name} style={style} />}</>
-    </>
+    </Fragment>
   )
 }
 ```
@@ -117,10 +120,10 @@ const InputElement = () => {
 ### 'useInput' (Input field, can be any `<input />` except radio button)
 ```jsx
 const InputElements = () => {
-  const name = useInput({value: 'luffy', name: 'name'});
+  const name = useInput({value: 'luffy', name: 'name'}, {}, React);
 
-  const isSaiyan = useCheckbox({name: 'isSaiyan', checked: true});
-  const isSuper = useCheckbox({name: 'isSuper'});
+  const isSaiyan = useCheckbox({name: 'isSaiyan', checked: true}, {}, React);
+  const isSuper = useCheckbox({name: 'isSuper'}, {}, React);
 
   // Can be any Input Element
   // (text, checkbox, password, datetme
@@ -148,14 +151,14 @@ const RadioElements = () => {
   const genderRadio = useRadioGroup(null, [
     {attributes: { value: 'Male', checked: false, name: 'gender' }},
     {attributes: { value: 'Female', checked: false, name: 'gender' }},
-  ]);
+  ], React);
 
   // radio elements
   const [gender1, gender2] = genderRadio.elements;
   var currentSelection = genderRadio.current;
 
   return (
-    <>
+    <Fragment>
       <Form.Input element={gender1} />
       <Form.Input element={gender2} />
 
@@ -163,7 +166,7 @@ const RadioElements = () => {
         * <input {...gender1.attr} />
         * <input {...gender.attr} />
         */}
-    </>
+    </Fragment>
   )
 }
 ```
@@ -171,8 +174,12 @@ const RadioElements = () => {
 ### 'useSelect' (`<select />` field):
 ```jsx
   const SelectElement = () => {
-    const select = useSelect({value: '', name: 'select'});
-    const multiselect = useSelect({value: '', name: 'multiselect', multiple: true});
+    const select = useSelect({value: '', name: 'select'}, {}, React);
+    const multiselect = useSelect(
+      {value: '', name: 'multiselect', multiple: true},
+      {},
+      React
+    );
 
     return (
       <>
@@ -207,7 +214,7 @@ const RadioElements = () => {
 ### 'useTextArea' (`<textarea />` field)
 ```jsx
   const TextAreaElement = () => {
-    const description = useTextArea({value: '', name: 'description'});
+    const description = useTextArea({value: '', name: 'description'}, {}, React);
 
     return (
       <>
