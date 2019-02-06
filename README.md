@@ -1,7 +1,8 @@
 # form-field-hooks (React)
-stateful input field hooks built with react-hooks, for ease of validations etc.
+stateful input field hooks built with react-hooks, for ease of validations etc. <small>(This is experimental for now, feel free to pr fixes and upgrades.)</small>
 
-
+# still in "BETA" bois!
+![the lord himself](https://picon.ngfiles.com/657000/flash_657585_largest_crop.png)
 
 ## Attributes and return types
 ### Input fields:
@@ -101,7 +102,7 @@ const InputElement = () => {
 
       {/* Form.Input takes care of not rendering the input if `show` is False */}
 
-      <Form.Input element={name} style={style} />
+      <Form.Input element={name} style={style} react={React} />
       {(
         !meta.valid &&
         meta.customValidity.length // we get to set this in `options.validations`
@@ -110,7 +111,7 @@ const InputElement = () => {
 
       {/* Or using without `Form` */}
 
-      <>{show && <input element={name} style={style} />}</>
+      {show && <input element={name} style={style} />}
     </Fragment>
   )
 }
@@ -129,17 +130,17 @@ const InputElements = () => {
   // (text, checkbox, password, datetme
   // datetime-local, time, phone, checkbox etc)
   return (
-    <>
-      <Form.Input element={name} />
-      <Form.Input element={isSuper} />
-      <Form.Input element={isSaiyan} />
+    <Fragment>
+      <Form.Input element={name} react={React} />
+      <Form.Input element={isSuper} react={React} />
+      <Form.Input element={isSaiyan} react={React} />
       
       {/** can also use
         * <input {...name.attr} />
         * <input {...isSuper.attr} />
         * <input {...isSaiyan.attr} />
         */}
-    </>
+    </Fragment>
   )
 }
 ```
@@ -159,8 +160,8 @@ const RadioElements = () => {
 
   return (
     <Fragment>
-      <Form.Input element={gender1} />
-      <Form.Input element={gender2} />
+      <Form.Input element={gender1} react={React} />
+      <Form.Input element={gender2} react={React} />
 
       {/** can also use
         * <input {...gender1.attr} />
@@ -194,6 +195,7 @@ const RadioElements = () => {
         <Form.Select
           element={select}
           defaultOption={{ value: '', label: '--', hideAfter: true}}
+          react={React}
         >
           <option value='1'>One Piece</option>
           <option value='2'>Cowboy Bebop</option>
@@ -218,7 +220,7 @@ const RadioElements = () => {
 
     return (
       <Fragment>
-        <Field.TextArea element={description} />
+        <Field.TextArea element={description} react={React} />
 
         {/** can also use
           * <textarea {...description.attr} />
