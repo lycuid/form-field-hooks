@@ -182,7 +182,7 @@ const RadioElements = () => {
     );
 
     return (
-      <>
+      <Fragment>
         {/*
           * Here the `defaultOption` attr will add
           * an extra null option
@@ -206,7 +206,7 @@ const RadioElements = () => {
           * ...
           * </select>
           */}
-      </>
+      </Fragment>
     )
   }
 ```
@@ -217,13 +217,13 @@ const RadioElements = () => {
     const description = useTextArea({value: '', name: 'description'}, {}, React);
 
     return (
-      <>
+      <Fragment>
         <Field.TextArea element={description} />
 
         {/** can also use
           * <textarea {...description.attr} />
           */}
-      </>
+      </Fragment>
     )
   }
 ```
