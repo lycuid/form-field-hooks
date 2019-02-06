@@ -7,7 +7,7 @@
 	"homepage": "https://github.com/abhishek-kdm/form-field-hooks#readme",
 	"main": "dist/bundle.js",
 	"typings": "dist/index.d.ts",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "form-field-hooks",
 	"author": "Abhishek Kadam",
 	"license": "MIT",
