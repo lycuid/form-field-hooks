@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Types, Field } from '../Interfaces';
-import { useField, useCheckableField, useTextAreaField } from './generic-form-hooks';
+import { useField, useCheckableField } from './generic-form-hooks';
 
 import { continueDefault } from '../Utils';
 
@@ -13,30 +13,27 @@ export const useInput = (
 ): Field.InputElement =>
 {
 
-  let {
-    attr, dispatchAttr,
-    meta, dispatchMeta,
-    sanitize, dispatchOptions
-  } = useField(attributes, options, (react || React));
+  let { attr, dispatchAttr, ...rest } = useField(attributes, options, (react || React));
 
   /**
    * The dom is updated almost instantly,
    * but the attr object wont.
    */
-  const onChange: Types.Void = (
+  const onChange: Types.Void = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) =>
   {
     const { value } = e.target;
 
     dispatchAttr({ value });
+
     continueDefault(e, attr, 'onChange');
   }
 
   let element: Field.InputElement = {
     attr: {...attr, onChange}, dispatchAttr,
-    meta, dispatchMeta, dispatchOptions,
-    sanitize, fieldType: attr.type
+    fieldType: attr.type,
+    ...rest
   };
 
   return element;
@@ -55,11 +52,7 @@ export const useTextArea = (
   options?: Field.Options,
   react?: any,
 ): Field.TextAreaElement => {
-  let {
-    attr, dispatchAttr,
-    meta, dispatchMeta,
-    sanitize, dispatchOptions
-  } = useTextAreaField(attributes, options, (react || React));
+  let { attr, dispatchAttr, ...rest } = useField<Field.TextAreaAttributes>(attributes, options, (react || React));
 
   /**
    * The dom is updated almost instantly,
@@ -77,8 +70,8 @@ export const useTextArea = (
 
   let element: Field.TextAreaElement = {
     attr: {...attr, onChange}, dispatchAttr,
-    meta, dispatchMeta, dispatchOptions,
-    sanitize, fieldType: attr.type
+    fieldType: attr.type,
+    ...rest
   };
 
   return element;
@@ -94,13 +87,11 @@ export const useSelect = (
   react?: any,
 ): Field.SelectElement =>
 {
-  const { suppressChange, ...rest } = attributes;
+  const { suppressChange, ...restAttr } = attributes;
 
   let {
-    attr, dispatchAttr,
-    meta, dispatchMeta,
-    sanitize, dispatchOptions
-  } = useField<Field.SelectAttributes>(rest, options, (react || React));
+    attr, dispatchAttr, ...rest
+  } = useField<Field.SelectAttributes>(restAttr, options, (react || React));
 
   // The dom is updated almost instantly, but the attr object isn't.
   const onChange: Types.Void = (
@@ -127,8 +118,8 @@ export const useSelect = (
 
   let element: Field.SelectElement = {
     attr: {...attr, onChange}, dispatchAttr,
-    meta, dispatchMeta, dispatchOptions,
-    sanitize, fieldType: 'select'
+    fieldType: 'select',
+    ...rest
   };
 
 
@@ -146,9 +137,7 @@ export const useCheckbox = (
 ): Field.InputElement =>
 {
   let {
-    attr, dispatchAttr,
-    meta, dispatchMeta,
-    sanitize, dispatchOptions
+    attr, dispatchAttr, ...rest
   } = useCheckableField<Field.CheckboxAttributes>(
     {...attributes, type: 'checkbox'},
     (options || {}) as Field.Options,
@@ -165,8 +154,8 @@ export const useCheckbox = (
 
   let element: Field.InputElement = {
     attr: {...attr, onChange}, dispatchAttr,
-    meta, dispatchMeta, dispatchOptions,
-    sanitize, fieldType: 'checkbox'
+    fieldType: 'checkbox',
+    ...rest
   };
 
   return element;
@@ -181,6 +170,8 @@ export const useCheckbox = (
  * @todo Fix this situation for radio buttons ->
  * `hooks` can only be called at the `top level`. yet we are using them
  * in a loop.
+ * 
+ * @NOTE DO NOT USE THIS
  */
 export const useRadioGroup = (
   defaultValue: string | null,
@@ -204,9 +195,7 @@ export const useRadioGroup = (
   const append = ({ attributes, options, react }: Field.InputAttributes) => {
     // create radio button with controlled `checked` attribute.
     let {
-      attr, dispatchAttr,
-      meta, dispatchMeta,
-      sanitize, dispatchOptions
+      attr, dispatchAttr, sanitize, ...rest
     } = useCheckableField<Field.RadioAttributes>({
       ...attributes, type: 'radio', checked: !!attributes.checked
     }, options, (react || React));
@@ -231,8 +220,9 @@ export const useRadioGroup = (
 
     let element = {
       attr: {...attr, onChange}, dispatchAttr,
-      meta, dispatchMeta, dispatchOptions,
-      sanitize, fieldType: 'radio'
+      sanitize,
+      fieldType: 'radio',
+      ...rest
     };
 
     radioGroup.push(element);

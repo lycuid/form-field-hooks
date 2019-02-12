@@ -99,7 +99,7 @@ declare namespace Field {
     dirty: boolean
     valid: boolean
     show: boolean
-    customValidity: string
+    validationMessage: string
   }
 
   /** for low level Field hooks. */
@@ -111,12 +111,14 @@ declare namespace Field {
     dispatchMeta: Types.Void
     sanitize: Types.Void
     dispatchOptions: Types.Void
-    fieldType?: string
   }
-
+  
   /** high level generic Field hook. */
   interface Element extends ObjectInterface {
     attr: InputAttributes | TextAreaAttributes | SelectAttributes
+    dispatchAttr: Types.Void
+    meta: Field.Meta
+    dispatchMeta: Types.Void
     fieldType: string
   }
 
@@ -149,6 +151,15 @@ declare namespace Field {
     | TextAreaElement
     | SelectElement
     | RadioElements
+
+  type HTMLGenericElement
+    = HTMLInputElement
+    | HTMLTextAreaElement
+    | HTMLSelectElement
+
+  type MutationEvent<T>
+    = React.ChangeEvent<T>
+    | React.FocusEvent<T>
 
 }
 
