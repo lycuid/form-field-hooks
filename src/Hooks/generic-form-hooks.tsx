@@ -21,6 +21,7 @@ export const useField = <T extends {}>(
     dirty: false,
     show: true,
     valid: true,
+    prevInputs: [attributes.value || null],
     validationMessage: '',
   };
 
@@ -66,11 +67,20 @@ export const useField = <T extends {}>(
     Object.keys(defaultMeta).length && dispatchMeta(defaultMeta);
   }
 
+
+  const addValueToMeta = (value: string | string[]) => {
+    // appending to meta, if not the same as last
+    if (meta.prevInputs[meta.prevInputs.length - 1] !== value) {
+      let updated = meta.prevInputs.slice();
+      updated.push(value)
+      dispatchMeta({ prevInputs: updated });
+    }
+  }
+
   // Event Handlers.
 
-  const handleEvent: Types.Void = (
-    e: Field.MutationEvent<Field.HTMLGenericElement>,
-    eventType: string
+  const onBlur: Types.Void = (
+    e: React.FocusEvent<Field.HTMLGenericElement>,
   ): void =>
   {
     let { touched } = meta;
@@ -78,10 +88,22 @@ export const useField = <T extends {}>(
     if (!touched) { dispatchMeta({ touched: true }) }
 
     sanitize();
-    continueDefault(e, attr, eventType);
+    addValueToMeta(attr.value);
+
+    continueDefault(e, attr, 'onBlur');
   }
-  const onFocus: Types.Void = (e: any) => {handleEvent(e, 'onFocus')}
-  const onBlur = (e: any) => {handleEvent(e, 'onBlur')}
+
+  const onFocus: Types.Void = (
+    e: React.FocusEvent<Field.HTMLGenericElement>,
+  ): void =>
+  {
+    let { touched } = meta;
+    if (!ref) { setRef(e.target) }
+    if (!touched) { dispatchMeta({ touched: true }) }
+
+    sanitize();
+    continueDefault(e, attr, 'onFocus');
+  }
 
   // same as the above event handling functions, except no `sanitize`
   // here as it is been taken care of in the side effect for value
@@ -91,15 +113,14 @@ export const useField = <T extends {}>(
   // the side effect is called after the value changes,
   // where as `onChange` is called before.
   const onChange: Types.Void = (
-    e: Field.MutationEvent<Field.HTMLGenericElement>,
-    eventType: string
+    e: React.ChangeEvent<Field.HTMLGenericElement>,
   ): void =>
   {
     let { touched } = meta;
     if (!ref) { setRef(e.target) }
     if (!touched) { dispatchMeta({ touched: true }) }
 
-    continueDefault(e, attr, eventType);
+    continueDefault(e, attr, 'onChange');
   }
   
   // effects: cDM, cDU.

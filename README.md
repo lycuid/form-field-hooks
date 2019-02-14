@@ -36,10 +36,13 @@ stateful input field hooks built with react-hooks, for ease of validations etc. 
 | dirty: `boolean` | if value changed |
 | valid: `boolean` | is valid |
 | show: `boolean` | should display |
-| customValidity: `string` | error message if `valid` is `false` |
+| prevInputs: `Array<string | string[]>` | List history of input values |
+| <strike>customValidity</strike> validationMessage: `string` | error message if `valid` is `false` |
+<strong>Note: </strong> validations work side by side with the [ValidityState API](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState) and [Constraint Validation API](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation)
 
+(use `options.validations` instead of the validity API as it might break the behaviour of the hooks' `meta`).
 
-### Radio Group: <small>(not entirely development ready yet)</small><br />
+<!-- ### Radio Group: <small>(not entirely development ready yet)</small><br />
 (`useRadioGroup`)<br />
 
 *_Input Parameters:_*
@@ -57,7 +60,7 @@ stateful input field hooks built with react-hooks, for ease of validations etc. 
 | current: `string` | selected option |
 | fieldType: `string` | always 'radio-group' |
 
-
+ -->
 
 ## Examples:
 ### Import
@@ -105,8 +108,8 @@ const InputElement = () => {
       <Form.Input element={name} style={style} react={React} />
       {(
         !meta.valid &&
-        meta.customValidity.length // we get to set this in `options.validations`
-      ) ? <ErrorMessage msg={meta.customValidity} /> : <></>}
+        meta.validationMessage.length // we get to set this in `options.validations`
+      ) ? <ErrorMessage msg={meta.validationMessage} /> : <></>}
 
 
       {/* Or using without `Form` */}
@@ -127,7 +130,7 @@ const InputElements = () => {
   const isSuper = useCheckbox({name: 'isSuper'}, {}, React);
 
   // Can be any Input Element
-  // (text, checkbox, password, datetme
+  // (text, checkbox, password, datetime
   // datetime-local, time, phone, checkbox etc)
   return (
     <Fragment>
@@ -144,7 +147,7 @@ const InputElements = () => {
   )
 }
 ```
-
+<!-- 
 ### 'useRadioGroup' (`<input type="radio" />` field)
 ```jsx
 const RadioElements = () => {
@@ -170,7 +173,7 @@ const RadioElements = () => {
     </Fragment>
   )
 }
-```
+``` -->
 
 ### 'useSelect' (`<select />` field):
 ```jsx

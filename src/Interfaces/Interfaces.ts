@@ -99,6 +99,7 @@ declare namespace Field {
     dirty: boolean
     valid: boolean
     show: boolean
+    prevInputs: Array<string | string[]>
     validationMessage: string
   }
 
