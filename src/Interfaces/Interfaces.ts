@@ -93,13 +93,15 @@ declare namespace Field {
 
   // Field related stuff.
 
+  type prevInput = { value: string | string[], ts: number } | null
+
   /** field's metadata interface. */
   interface Meta {
     touched: boolean
     dirty: boolean
     valid: boolean
     show: boolean
-    prevInputs: Array<string | string[]>
+    prevInputs: Array<prevInput>
     validationMessage: string
   }
 

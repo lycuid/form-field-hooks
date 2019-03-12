@@ -21,7 +21,7 @@ export const useField = <T extends {}>(
     dirty: false,
     show: true,
     valid: true,
-    prevInputs: [attributes.value || null],
+    prevInputs: [{ value: attributes.value, ts: new Date().getTime() } || null],
     validationMessage: '',
   };
 
@@ -70,9 +70,9 @@ export const useField = <T extends {}>(
 
   const addValueToMeta = (value: string | string[]) => {
     // appending to meta, if not the same as last
-    if (meta.prevInputs[meta.prevInputs.length - 1] !== value) {
+    if (meta.prevInputs[meta.prevInputs.length - 1].value !== value) {
       let updated = meta.prevInputs.slice();
-      updated.push(value)
+      updated.push({ value , ts: new Date().getTime() });
       dispatchMeta({ prevInputs: updated });
     }
   }
