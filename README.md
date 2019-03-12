@@ -1,8 +1,8 @@
 # form-field-hooks (React)
 stateful input field hooks built with react-hooks, for ease of validations etc. <small>(This is experimental for now, feel free to pr fixes and upgrades.)</small>
 
-# still in "BETA" bois!
-![the lord himself](https://picon.ngfiles.com/657000/flash_657585_largest_crop.png)
+<!-- # still in "BETA" bois!
+![the lord himself](https://picon.ngfiles.com/657000/flash_657585_largest_crop.png) -->
 
 ## Attributes and return types
 ### Input fields:
@@ -36,7 +36,7 @@ stateful input field hooks built with react-hooks, for ease of validations etc. 
 | dirty: `boolean` | if value changed |
 | valid: `boolean` | is valid |
 | show: `boolean` | should display |
-| prevInputs: `Array<string | string[]>` | List history of input values |
+| prevInputs: `Array<value: string | string[], ts: number }>`<br /><strike>prevInputs: `Array<string | string[]>`</strike> | List history of input values |
 | <strike>customValidity</strike> validationMessage: `string` | error message if `valid` is `false` |
 <strong>Note: </strong> validations work side by side with the [ValidityState API](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState) and [Constraint Validation API](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation)
 
