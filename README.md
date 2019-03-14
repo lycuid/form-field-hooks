@@ -36,7 +36,7 @@ stateful input field hooks built with react-hooks, for ease of validations etc. 
 | dirty: `boolean` | if value changed |
 | valid: `boolean` | is valid |
 | show: `boolean` | should display |
-| prevInputs: `Array<value: string | string[], ts: number }>`<br /><strike>prevInputs: `Array<string | string[]>`</strike> | List history of input values |
+| prevInputs: <code>Array<value: string &#124; string[], ts: number }></code><br /><strike>prevInputs: <code>Array<string &#124; string[]></code></strike> | List history of input values |
 | <strike>customValidity</strike> validationMessage: `string` | error message if `valid` is `false` |
 <strong>Note: </strong> validations work side by side with the [ValidityState API](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState) and [Constraint Validation API](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation)
 
